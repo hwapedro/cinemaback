@@ -1,22 +1,28 @@
-import { prop, arrayProp, getModelForClass } from '@typegoose/typegoose';
-import { defaultSchemaOptions, defaultOptions } from '~/common/database/constants';
+import { prop, arrayProp, getModelForClass, Ref } from '@typegoose/typegoose';
+import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 
 /*
-Текст	Дата и время
-Текстовый	Дата
+Заголовок	Текст	Дата	Комментарии
+Текстовый	Текстовый	Дата	Массив
  */
-export class Comment {
+export class News {
+  @prop()
+  title: string;
+
   @prop()
   text: string;
 
   @prop()
-  time: Date;
+  date: Date;
+
+  @arrayProp({ ref: 'Comment' })
+  comments: Ref<Comment>[];
 }
 
-export const CommentModel = getModelForClass(Comment, {
+export const NewsModel = getModelForClass(News, {
   schemaOptions: {
     ...defaultSchemaOptions,
-    collection: 'comments',
+    collection: 'news',
   },
   options: {
     ...defaultOptions,

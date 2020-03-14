@@ -1,5 +1,5 @@
 import { prop, getModelForClass } from '@typegoose/typegoose';
-import { defaultSchemaOptions, defaultOptions } from '~/common/database/constants';
+import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 
 /*
 Наименование	Стоимость	В наличии

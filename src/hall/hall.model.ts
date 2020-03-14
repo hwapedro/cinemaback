@@ -1,5 +1,5 @@
 import { prop, arrayProp, Ref, getModelForClass } from '@typegoose/typegoose';
-import { defaultSchemaOptions, defaultOptions } from '~/common/database/constants';
+import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 
 export enum HallCell {
   EMPTY,
@@ -15,7 +15,7 @@ export class Hall {
   @prop()
   name: string;
 
-  @arrayProp({ items: HallCell })
+  @arrayProp({ items: Number })
   structure: HallCell[][];
 }
 

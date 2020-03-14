@@ -2,7 +2,7 @@ import { prop, arrayProp, getModelForClass, Ref } from '@typegoose/typegoose';
 import { Hall } from '~/hall/hall.model';
 import { Shop } from '~/shop/shop.model';
 import { Film } from '~/film/film.model';
-import { defaultSchemaOptions, defaultOptions } from '~/common/database/constants';
+import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 
 /*
 Наименование	Залы	Магазины	Адрес	Фильмы

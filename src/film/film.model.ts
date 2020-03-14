@@ -1,5 +1,5 @@
 import { prop, arrayProp, getModelForClass, Ref } from '@typegoose/typegoose';
-import { defaultSchemaOptions, defaultOptions } from '~/common/database/constants';
+import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 import { AgeRule } from '~/ageRule/ageRule.model';
 import { Actor } from '~/actor/actor.model';
 import { Genre } from '~/genre/genre.model';

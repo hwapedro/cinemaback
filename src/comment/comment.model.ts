@@ -2,21 +2,21 @@ import { prop, getModelForClass } from '@typegoose/typegoose';
 import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 
 /*
-Фамилия	Имя	Биография
-Текстовый	Текстовый	Текстовый
+Текст	Дата и время
+Текстовый	Дата
  */
-export class Actor {
+export class Comment {
   @prop()
-  name: string;
+  text: string;
 
   @prop()
-  bio: string;
+  time: Date;
 }
 
-export const ActorModel = getModelForClass(Actor, {
+export const CommentModel = getModelForClass(Comment, {
   schemaOptions: {
     ...defaultSchemaOptions,
-    collection: 'actors',
+    collection: 'comments',
   },
   options: {
     ...defaultOptions,

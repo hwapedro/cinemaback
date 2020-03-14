@@ -1,6 +1,6 @@
 import { prop, arrayProp, getModelForClass, Ref } from '@typegoose/typegoose';
 import { ShopItem } from '~/shopItem/shopItem.model';
-import { defaultSchemaOptions, defaultOptions } from '~/common/database/constants';
+import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 
 /*
 Наименование	Описание	Товары
