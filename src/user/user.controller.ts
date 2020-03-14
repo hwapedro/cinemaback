@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Req, Res, UseGuards, Post, Body } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
 import BaseController from '../common/BaseController';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
@@ -7,9 +7,9 @@ import { ApiTags } from '@nestjs/swagger';
 
 @Controller('api/v1/users')
 @ApiTags('auth')
-export class UsersController extends BaseController {
+export class UserController extends BaseController {
   constructor(
-    private usersService: UsersService,
+    private readonly userService: UserService,
   ) {
     super();
   }
@@ -20,10 +20,17 @@ export class UsersController extends BaseController {
     @Body() body,
     @Req() req
   ) {
-    const user = await this.usersService.create(body);
+    const user = await this.userService.create(body);
     return this.wrapSuccess({
       user
     });
+  }
+
+  @Get('/:id')
+  async getById(
+    @Param() params: any
+  ) {
+
   }
 }
 
