@@ -1,15 +1,15 @@
 import { Controller, Get, Param, Req, Res, UseGuards, Post, Body, Put, Delete } from '@nestjs/common';
-import { UserService } from './user.service';
+import { __uppercaseName__Service } from './__name__.service';
 import BaseController from '../common/BaseController';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { QueryValidator } from '~/common/validators';
 
-@Controller('api/v1/users')
+@Controller('api/v1/__plural__')
 @ApiTags('auth')
-export class UserController extends BaseController {
+export class __uppercaseName__Controller extends BaseController {
   constructor(
-    private readonly userService: UserService,
+    private readonly __name__Service: __uppercaseName__Service,
   ) {
     super();
   }
@@ -20,11 +20,11 @@ export class UserController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    const user = await this.userService.findById(id)
+    const __name__ = await this.__name__Service.findById(id)
       .lean()
       .exec();
     return this.wrapSuccess({
-      user,
+      __name__,
     });
   }
 
@@ -34,7 +34,7 @@ export class UserController extends BaseController {
     @Body() query: QueryValidator,
     @Req() req,
   ) {
-    let findQuery = this.userService.find(query.conditions)
+    let findQuery = this.__name__Service.find(query.conditions)
       .lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);
@@ -42,9 +42,9 @@ export class UserController extends BaseController {
     if (query.skip) {
       findQuery = findQuery.skip(query.skip);
     }
-    const users = await findQuery.exec();
+    const __plural__ = await findQuery.exec();
     return this.wrapSuccess({
-      users,
+      __plural__,
     });
   }
 
@@ -54,9 +54,9 @@ export class UserController extends BaseController {
     @Body() body,
     @Req() req,
   ) {
-    const user = await this.userService.create(body);
+    const __name__ = await this.__name__Service.create(body);
     return this.wrapSuccess({
-      user
+      __name__
     });
   }
 
@@ -67,12 +67,12 @@ export class UserController extends BaseController {
     @Body() body,
     @Req() req,
   ) {
-    const updated = await this.userService.raw()
+    const updated = await this.__name__Service.raw()
       .findByIdAndUpdate(id, body)
       .lean()
       .exec();
     return this.wrapSuccess({
-      user: updated,
+      __name__: updated,
     });
   }
 
@@ -82,7 +82,7 @@ export class UserController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    await this.userService.raw()
+    await this.__name__Service.raw()
       .findByIdAndDelete(id);
     return this.wrapSuccess();
   }

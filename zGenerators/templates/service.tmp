@@ -1,0 +1,30 @@
+import { Injectable } from '@nestjs/common';
+import { ModelUpdateOptions } from 'mongoose';
+import { __uppercaseName__Model, __uppercaseName__ } from './__name__.model';
+
+@Injectable()
+export class __uppercaseName__Service {
+  constructor(
+
+  ) { }
+
+  create(body: Partial<__uppercaseName__>) {
+    return __uppercaseName__Model.create(body);
+  }
+
+  findById(id: string) {
+    return __uppercaseName__Model.findById(id);
+  }
+
+  find(conditions: any, projection?: any, options?: any) {
+    return __uppercaseName__Model.find(conditions, projection, options);
+  }
+
+  update(conditions: any, body: any, options?: ModelUpdateOptions) {
+    return __uppercaseName__Model.update(conditions, body, options);
+  }
+
+  delete(conditions: any) {
+    return __uppercaseName__Model.deleteMany(conditions);
+  }
+}
