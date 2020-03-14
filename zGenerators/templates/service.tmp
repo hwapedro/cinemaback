@@ -27,4 +27,8 @@ export class __uppercaseName__Service {
   delete(conditions: any) {
     return __uppercaseName__Model.deleteMany(conditions);
   }
+
+  raw() {
+    return __uppercaseName__Model;
+  }
 }

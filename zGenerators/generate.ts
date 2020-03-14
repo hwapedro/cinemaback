@@ -5,7 +5,7 @@
 import * as fs from 'fs-extra';
 import { GModule } from './types';
 import config from './config';
-import path from 'path';
+import * as path from 'path';
 import { format } from './helpers';
 const { root } = config;
 
@@ -66,12 +66,13 @@ const { root } = config;
       plural: 'tickets',
       modelName: 'Ticket',
     },
-  ].map((m: GModule) => {
-    if (!m.uppercaseName) {
-      m.uppercaseName = m.name[0].toUpperCase() + m.name.slice(1);
-    }
-    return m;
-  });
+  ]
+    .map((m: GModule) => {
+      if (!m.uppercaseName) {
+        m.uppercaseName = m.name[0].toUpperCase() + m.name.slice(1);
+      }
+      return m;
+    });
 
   // load templates
   const controllerTemplate = (await fs.readFile(`${path.resolve(__dirname, 'templates/controller.tmp')}`)).toString();
