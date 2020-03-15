@@ -66,13 +66,21 @@ const { root } = config;
       plural: 'tickets',
       modelName: 'Ticket',
     },
+    {
+      name: 'showtime',
+      plural: 'showtimes',
+      modelName: 'Showtime',
+    },
   ]
     .map((m: GModule) => {
       if (!m.uppercaseName) {
         m.uppercaseName = m.name[0].toUpperCase() + m.name.slice(1);
       }
       return m;
-    });
+    })
+    .filter(m => {
+      return process.argv[2] ? m.name.indexOf(process.argv[2]) > -1 : true;
+    })
 
   // load templates
   const controllerTemplate = (await fs.readFile(`${path.resolve(__dirname, 'templates/controller.tmp')}`)).toString();
@@ -90,6 +98,7 @@ const { root } = config;
       }),
     };
 
+    await fs.ensureDir(`${path.resolve(root, 'src', name)}`);
     // save controller
     await fs.writeFile(`${path.resolve(root, 'src', name, `${name}.controller.ts`)}`, controller.content);
 

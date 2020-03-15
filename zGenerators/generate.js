@@ -116,12 +116,20 @@ var root = config_1["default"].root;
                         plural: 'tickets',
                         modelName: 'Ticket'
                     },
+                    {
+                        name: 'showtime',
+                        plural: 'showtimes',
+                        modelName: 'Showtime'
+                    },
                 ]
                     .map(function (m) {
                     if (!m.uppercaseName) {
                         m.uppercaseName = m.name[0].toUpperCase() + m.name.slice(1);
                     }
                     return m;
+                })
+                    .filter(function (m) {
+                    return process.argv[2] ? m.name.indexOf(process.argv[2]) > -1 : true;
                 });
                 return [4 /*yield*/, fs.readFile("" + path.resolve(__dirname, 'templates/controller.tmp'))];
             case 1:
@@ -135,16 +143,19 @@ var root = config_1["default"].root;
                 _i = 0, modules_1 = modules;
                 _a.label = 4;
             case 4:
-                if (!(_i < modules_1.length)) return [3 /*break*/, 9];
+                if (!(_i < modules_1.length)) return [3 /*break*/, 10];
                 m = modules_1[_i];
                 name_1 = m.name, modelName = m.modelName, uppercaseName = m.uppercaseName;
                 controller = {
                     name: name_1 + ".controller.ts",
                     content: helpers_1.format(controllerTemplate, __assign({}, m))
                 };
+                return [4 /*yield*/, fs.ensureDir("" + path.resolve(root, 'src', name_1))];
+            case 5:
+                _a.sent();
                 // save controller
                 return [4 /*yield*/, fs.writeFile("" + path.resolve(root, 'src', name_1, name_1 + ".controller.ts"), controller.content)];
-            case 5:
+            case 6:
                 // save controller
                 _a.sent();
                 service = {
@@ -153,7 +164,7 @@ var root = config_1["default"].root;
                 };
                 // save service
                 return [4 /*yield*/, fs.writeFile("" + path.resolve(root, 'src', name_1, name_1 + ".service.ts"), service.content)];
-            case 6:
+            case 7:
                 // save service
                 _a.sent();
                 zmodule = {
@@ -162,14 +173,14 @@ var root = config_1["default"].root;
                 };
                 // save module
                 return [4 /*yield*/, fs.writeFile("" + path.resolve(root, 'src', name_1, name_1 + ".module.ts"), zmodule.content)];
-            case 7:
+            case 8:
                 // save module
                 _a.sent();
-                _a.label = 8;
-            case 8:
+                _a.label = 9;
+            case 9:
                 _i++;
                 return [3 /*break*/, 4];
-            case 9: return [2 /*return*/];
+            case 10: return [2 /*return*/];
         }
     });
 }); })();

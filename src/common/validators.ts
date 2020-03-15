@@ -8,8 +8,10 @@ export class QueryValidator {
   conditions: any;
 
   @IsInt()
+  @IsOptional()
   limit: number;
 
   @IsInt()
+  @IsOptional()
   skip: number;
 }

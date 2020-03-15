@@ -1,41 +1,17 @@
 import { Controller, Get, Param, Req, Res, UseGuards, Post, Body, Put, Delete } from '@nestjs/common';
-import { CinemaService } from './cinema.service';
+import { ShowtimeService } from './showtime.service';
 import BaseController from '../common/BaseController';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { QueryValidator } from '~/common/validators';
 
-@Controller('api/v1/cinemas')
+@Controller('api/v1/showtimes')
 @ApiTags('auth')
-export class CinemaController extends BaseController {
+export class ShowtimeController extends BaseController {
   constructor(
-    private readonly cinemaService: CinemaService,
+    private readonly showtimeService: ShowtimeService,
   ) {
     super();
-  }
-
-  @Post('/client/query')
-  async getClient(
-    @Body() query: QueryValidator,
-    @Req() req,
-  ) {
-    let findQuery = this.cinemaService.find(query.conditions)
-      .populate('halls')
-      .populate('shops')
-      .populate('shops')
-      .populate('films')
-      .populate('showtimes')
-      .lean();
-    if (query.limit) {
-      findQuery = findQuery.limit(query.limit);
-    }
-    if (query.skip) {
-      findQuery = findQuery.skip(query.skip);
-    }
-    const cinemas = await findQuery.exec();
-    return this.wrapSuccess({
-      cinemas,
-    });
   }
 
   @Get('/:id')
@@ -44,11 +20,11 @@ export class CinemaController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    const cinema = await this.cinemaService.findById(id)
+    const showtime = await this.showtimeService.findById(id)
       .lean()
       .exec();
     return this.wrapSuccess({
-      cinema,
+      showtime,
     });
   }
 
@@ -58,7 +34,7 @@ export class CinemaController extends BaseController {
     @Body() query: QueryValidator,
     @Req() req,
   ) {
-    let findQuery = this.cinemaService.find(query.conditions)
+    let findQuery = this.showtimeService.find(query.conditions)
       .lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);
@@ -66,9 +42,9 @@ export class CinemaController extends BaseController {
     if (query.skip) {
       findQuery = findQuery.skip(query.skip);
     }
-    const cinemas = await findQuery.exec();
+    const showtimes = await findQuery.exec();
     return this.wrapSuccess({
-      cinemas,
+      showtimes,
     });
   }
 
@@ -78,9 +54,9 @@ export class CinemaController extends BaseController {
     @Body() body,
     @Req() req,
   ) {
-    const cinema = await this.cinemaService.create(body);
+    const showtime = await this.showtimeService.create(body);
     return this.wrapSuccess({
-      cinema
+      showtime
     });
   }
 
@@ -91,12 +67,12 @@ export class CinemaController extends BaseController {
     @Body() body,
     @Req() req,
   ) {
-    const updated = await this.cinemaService.raw()
+    const updated = await this.showtimeService.raw()
       .findByIdAndUpdate(id, body)
       .lean()
       .exec();
     return this.wrapSuccess({
-      cinema: updated,
+      showtime: updated,
     });
   }
 
@@ -106,7 +82,7 @@ export class CinemaController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    await this.cinemaService.raw()
+    await this.showtimeService.raw()
       .findByIdAndDelete(id);
     return this.wrapSuccess();
   }
