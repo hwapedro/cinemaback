@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Req, Res, UseGuards, Body, Post, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   ApiExtraModels,
@@ -12,18 +12,33 @@ import {
 import BaseController from '../common/BaseController';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from './swagger'
+import { UserService } from '~/user/user.service';
 
 
 @Controller('api/v1/auth')
 @ApiTags('auth')
 @ApiExtraModels(Response.Successful, Response.NeedRegistrationResponse, Response.Unsuccessful)
 export class AuthController extends BaseController {
-  constructor (
+  constructor(
     private service: AuthService,
+    private userService: UserService
   ) {
     super();
   }
 
+  @Post('/login')
+  @HttpCode(200)
+  async login(@Body() body: any) {
+    const { email, password } = body
+    const user = (await this.userService.find({ email, password }).lean().exec())[0]
+    if (!user) {
+      return this.wrapError('no user')
+    }
+    return this.wrapSuccess({
+      user: user,
+      token: await this.service.getJWTToken(user._id)
+    });
+  }
 
   // @Get(':socialNetworkType/:socialNetworkToken')
   // @ApiParam({ name: 'socialNetworkType', type: 'string', description: 'can be only google' })
@@ -40,7 +55,7 @@ export class AuthController extends BaseController {
   //   },
   //   description: 'unsuccessful - auth validations and if need auth at first. Successful when auth is ok',
   // })
-  // async login (@Param('socialNetworkType') socialNetworkType, @Req() req) {
+  // async login2(@Param('socialNetworkType') socialNetworkType, @Req() req) {
   //   const user = await this.usersService.getUserBySocialNetworkId(req.socialNetworkId);
 
   //   if (!user) {
