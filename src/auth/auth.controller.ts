@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Req, Res, UseGuards, Body, Post, HttpCode } from '@nestjs/common';
+import { Controller, Get, Param, Req, Res, UseGuards, Body, Post, HttpCode, HttpStatus, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   ApiExtraModels,
@@ -31,9 +31,13 @@ export class AuthController extends BaseController {
   async login(@Body() body: any) {
     const { email, password } = body
     const user = (await this.userService.find({ email, password }).lean().exec())[0]
+
     if (!user) {
-      return this.wrapError('no user')
+      throw new BadRequestException({
+        ...this.wrapError('no user'),
+      });
     }
+
     return this.wrapSuccess({
       user: user,
       token: await this.service.getJWTToken(user._id)
