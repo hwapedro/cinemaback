@@ -68,7 +68,7 @@ export class GenreController extends BaseController {
     @Req() req,
   ) {
     const updated = await this.genreService.raw()
-      .findByIdAndUpdate(id, body)
+      .findByIdAndUpdate(id, body, { new: true })
       .lean()
       .exec();
     return this.wrapSuccess({

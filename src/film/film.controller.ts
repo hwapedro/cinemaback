@@ -68,7 +68,7 @@ export class FilmController extends BaseController {
     @Req() req,
   ) {
     const updated = await this.filmService.raw()
-      .findByIdAndUpdate(id, body)
+      .findByIdAndUpdate(id, body, { new: true }, { new: true })
       .lean()
       .exec();
     return this.wrapSuccess({

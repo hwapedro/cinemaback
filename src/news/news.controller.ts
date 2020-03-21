@@ -68,7 +68,7 @@ export class NewsController extends BaseController {
     @Req() req,
   ) {
     const updated = await this.newsService.raw()
-      .findByIdAndUpdate(id, body)
+      .findByIdAndUpdate(id, body, { new: true })
       .lean()
       .exec();
     return this.wrapSuccess({

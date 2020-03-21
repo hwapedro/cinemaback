@@ -68,7 +68,7 @@ export class ShopController extends BaseController {
     @Req() req,
   ) {
     const updated = await this.shopService.raw()
-      .findByIdAndUpdate(id, body)
+      .findByIdAndUpdate(id, body, { new: true })
       .lean()
       .exec();
     return this.wrapSuccess({

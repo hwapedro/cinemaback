@@ -68,7 +68,7 @@ export class HallController extends BaseController {
     @Req() req,
   ) {
     const updated = await this.hallService.raw()
-      .findByIdAndUpdate(id, body)
+      .findByIdAndUpdate(id, body, { new: true })
       .lean()
       .exec();
     return this.wrapSuccess({

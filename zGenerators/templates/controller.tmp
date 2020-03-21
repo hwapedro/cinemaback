@@ -68,7 +68,7 @@ export class __uppercaseName__Controller extends BaseController {
     @Req() req,
   ) {
     const updated = await this.__name__Service.raw()
-      .findByIdAndUpdate(id, body)
+      .findByIdAndUpdate(id, body, { new: true })
       .lean()
       .exec();
     return this.wrapSuccess({

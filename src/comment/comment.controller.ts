@@ -68,7 +68,7 @@ export class CommentController extends BaseController {
     @Req() req,
   ) {
     const updated = await this.commentService.raw()
-      .findByIdAndUpdate(id, body)
+      .findByIdAndUpdate(id, body, { new: true })
       .lean()
       .exec();
     return this.wrapSuccess({

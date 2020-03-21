@@ -68,7 +68,7 @@ export class UserController extends BaseController {
     @Req() req,
   ) {
     const updated = await this.userService.raw()
-      .findByIdAndUpdate(id, body)
+      .findByIdAndUpdate(id, body, { new: true })
       .lean()
       .exec();
     return this.wrapSuccess({

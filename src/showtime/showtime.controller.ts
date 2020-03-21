@@ -68,7 +68,7 @@ export class ShowtimeController extends BaseController {
     @Req() req,
   ) {
     const updated = await this.showtimeService.raw()
-      .findByIdAndUpdate(id, body)
+      .findByIdAndUpdate(id, body, { new: true })
       .lean()
       .exec();
     return this.wrapSuccess({

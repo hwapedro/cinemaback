@@ -68,7 +68,7 @@ export class AgeRuleController extends BaseController {
     @Req() req,
   ) {
     const updated = await this.ageRuleService.raw()
-      .findByIdAndUpdate(id, body)
+      .findByIdAndUpdate(id, body, { new: true })
       .lean()
       .exec();
     return this.wrapSuccess({

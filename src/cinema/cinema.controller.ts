@@ -92,7 +92,7 @@ export class CinemaController extends BaseController {
     @Req() req,
   ) {
     const updated = await this.cinemaService.raw()
-      .findByIdAndUpdate(id, body)
+      .findByIdAndUpdate(id, body, { new: true })
       .lean()
       .exec();
     return this.wrapSuccess({

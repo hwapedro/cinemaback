@@ -68,7 +68,7 @@ export class TicketController extends BaseController {
     @Req() req,
   ) {
     const updated = await this.ticketService.raw()
-      .findByIdAndUpdate(id, body)
+      .findByIdAndUpdate(id, body, { new: true })
       .lean()
       .exec();
     return this.wrapSuccess({

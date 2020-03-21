@@ -68,7 +68,7 @@ export class ActorController extends BaseController {
     @Req() req,
   ) {
     const updated = await this.actorService.raw()
-      .findByIdAndUpdate(id, body)
+      .findByIdAndUpdate(id, body, { new: true })
       .lean()
       .exec();
     return this.wrapSuccess({
