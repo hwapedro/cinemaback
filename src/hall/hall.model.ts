@@ -1,4 +1,4 @@
-import { prop, arrayProp, Ref, getModelForClass } from '@typegoose/typegoose';
+import { prop, arrayProp, Ref, getModelForClass, mongoose } from '@typegoose/typegoose';
 import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 
 export enum HallCell {
@@ -15,8 +15,8 @@ export class Hall {
   @prop()
   name: string;
 
-  @arrayProp({ items: Number })
-  structure: HallCell[][];
+  @arrayProp({ items: mongoose.Types.Array })
+  structure: Array<Array<HallCell>>;
 }
 
 export const HallModel = getModelForClass(Hall, {

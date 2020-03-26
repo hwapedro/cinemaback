@@ -12,6 +12,7 @@ import { CommentModule } from './comment/comment.module';
 import { CinemaModule } from './cinema/cinema.module';
 import { AgeRuleModule } from './ageRule/ageRule.module';
 import { ActorModule } from './actor/actor.module';
+import { ShowtimeModule } from './showtime/showtime.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ActorModule } from './actor/actor.module';
     CinemaModule,
     AgeRuleModule,
     ActorModule,
+    ShowtimeModule
   ],
   controllers: [],
   providers: [],

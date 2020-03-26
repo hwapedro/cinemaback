@@ -34,17 +34,19 @@ export class FilmController extends BaseController {
     @Body() query: QueryValidator,
     @Req() req,
   ) {
-    let findQuery = this.filmService.find(query.conditions)
-      .lean();
+    let findQuery = this.filmService.find(query.conditions).lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);
     }
     if (query.skip) {
       findQuery = findQuery.skip(query.skip);
     }
+    const count = await this.filmService.find(query.conditions).countDocuments().exec();
     const films = await findQuery.exec();
     return this.wrapSuccess({
       films,
+      hasMore: ((query.skip || 0) + (query.limit || 1)) < count,
+      total: count,
     });
   }
 
@@ -68,7 +70,7 @@ export class FilmController extends BaseController {
     @Req() req,
   ) {
     const updated = await this.filmService.raw()
-      .findByIdAndUpdate(id, body, { new: true }, { new: true })
+      .findByIdAndUpdate(id, body, { new: true })
       .lean()
       .exec();
     return this.wrapSuccess({

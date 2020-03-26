@@ -34,17 +34,19 @@ export class ShopItemController extends BaseController {
     @Body() query: QueryValidator,
     @Req() req,
   ) {
-    let findQuery = this.shopItemService.find(query.conditions)
-      .lean();
+    let findQuery = this.shopItemService.find(query.conditions).lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);
     }
     if (query.skip) {
       findQuery = findQuery.skip(query.skip);
     }
+    const count = await this.shopItemService.find(query.conditions).countDocuments().exec();
     const shopItems = await findQuery.exec();
     return this.wrapSuccess({
       shopItems,
+      hasMore: ((query.skip || 0) + (query.limit || 1)) < count,
+      total: count,
     });
   }
 

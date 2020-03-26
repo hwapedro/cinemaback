@@ -14,30 +14,6 @@ export class CinemaController extends BaseController {
     super();
   }
 
-  @Post('/client/query')
-  async getClient(
-    @Body() query: QueryValidator,
-    @Req() req,
-  ) {
-    let findQuery = this.cinemaService.find(query.conditions)
-      .populate('halls')
-      .populate('shops')
-      .populate('shops')
-      .populate('films')
-      .populate('showtimes')
-      .lean();
-    if (query.limit) {
-      findQuery = findQuery.limit(query.limit);
-    }
-    if (query.skip) {
-      findQuery = findQuery.skip(query.skip);
-    }
-    const cinemas = await findQuery.exec();
-    return this.wrapSuccess({
-      cinemas,
-    });
-  }
-
   @Get('/:id')
   @UseGuards(AuthGuard('jwt'))
   async getById(
@@ -58,17 +34,19 @@ export class CinemaController extends BaseController {
     @Body() query: QueryValidator,
     @Req() req,
   ) {
-    let findQuery = this.cinemaService.find(query.conditions)
-      .lean();
+    let findQuery = this.cinemaService.find(query.conditions).lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);
     }
     if (query.skip) {
       findQuery = findQuery.skip(query.skip);
     }
+    const count = await this.cinemaService.find(query.conditions).countDocuments().exec();
     const cinemas = await findQuery.exec();
     return this.wrapSuccess({
       cinemas,
+      hasMore: ((query.skip || 0) + (query.limit || 1)) < count,
+      total: count,
     });
   }
 

@@ -34,17 +34,19 @@ export class CommentController extends BaseController {
     @Body() query: QueryValidator,
     @Req() req,
   ) {
-    let findQuery = this.commentService.find(query.conditions)
-      .lean();
+    let findQuery = this.commentService.find(query.conditions).lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);
     }
     if (query.skip) {
       findQuery = findQuery.skip(query.skip);
     }
+    const count = await this.commentService.find(query.conditions).countDocuments().exec();
     const comments = await findQuery.exec();
     return this.wrapSuccess({
       comments,
+      hasMore: ((query.skip || 0) + (query.limit || 1)) < count,
+      total: count,
     });
   }
 

@@ -4,6 +4,20 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { UserService } from './user/user.service';
+import { ActorService } from './actor/actor.service';
+import { AgeRuleService } from './ageRule/ageRule.service';
+import { CinemaService } from './cinema/cinema.service';
+import { CommentService } from './comment/comment.service';
+import { GenreService } from './genre/genre.service';
+import { HallService } from './hall/hall.service';
+import { HallCell } from './hall/hall.model';
+import { NewsService } from './news/news.service';
+import { ShopService } from './shop/shop.service';
+import { ShopItemService } from './shopItem/shopItem.service';
+import { ShowtimeService } from './showtime/showtime.service';
+import { FilmService } from './film/film.service';
+import { TicketService } from './ticket/ticket.service';
+import { Seat } from './ticket/ticket.model';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,5 +26,91 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(+process.env.PORT);
+
+  // create test
+  if (false) {
+    const { _id: actorId } = await app.get(ActorService).create({
+      bio: 'Somebody once told me',
+      name: 'Дмитрий Бабин'
+    });
+    await app.get(UserService).create({
+      name: 'Dima',
+      email: 'hehe@xd.cc',
+      password: '12345',
+    });
+    const { _id: ageRuleId } = await app.get(AgeRuleService).create({
+      name: '6+'
+    });
+    const { _id: commentId } = await app.get(CommentService).create({
+      time: new Date(),
+      text: '123',
+    });
+    const { _id: genreId } = await app.get(GenreService).create({
+      name: 'Боевик'
+    });
+    const { _id: hallId } = await app.get(HallService).create({
+      name: 'Зеленый',
+      structure: [
+        [HallCell.STANDARD, HallCell.STANDARD],
+        [HallCell.PREMIUM, HallCell.EMPTY]
+      ]
+    });
+    await app.get(NewsService).create({
+      date: new Date(),
+      text: '1333dcwqqacfq',
+      title: 'Hehe xd?',
+      comments: [commentId]
+    });
+    const { _id: itemId } = await app.get(ShopItemService).create({
+      inStock: true,
+      name: 'Poop corn',
+      price: 1222
+    });
+    const { _id: filmId } = await app.get(FilmService).create({
+      actors: [actorId],
+      ageRule: ageRuleId,
+      description: '123',
+      distributionStartDate: new Date(),
+      distributionEndDate: new Date(),
+      duration: 103,
+      name: 'HEHE XD',
+      genres: [genreId],
+      releaseDate: new Date(),
+    });
+    const { _id: showtimeId } = await app.get(ShowtimeService).create({
+      time: new Date(),
+      halls: [hallId],
+      film: filmId
+    });
+    const { _id: shopId } = await app.get(ShopService).create({
+      name: 'Havka',
+      description: 'Best shop',
+      items: [itemId]
+    });
+    const { _id: cinemaId } = await app.get(CinemaService).create({
+      name: 'Cinema',
+      address: '123',
+      films: [filmId],
+      halls: [hallId],
+      shops: [shopId],
+      showtimes: [showtimeId],
+    });
+    const { _id: ticketId } = await app.get(TicketService).create({
+      cinema: cinemaId,
+      hall: hallId,
+      film: filmId,
+      firstName: 'german',
+      lastName: 'gorodnev',
+      orderedItems: [itemId],
+      phone: '+123',
+      price: 52500,
+      seats: [{
+        row: 1,
+        number: 1,
+        type: HallCell.PREMIUM
+      }],
+      time: new Date(),
+    });
+  }
 }
 bootstrap();

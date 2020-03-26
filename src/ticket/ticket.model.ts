@@ -1,4 +1,4 @@
-import { prop, arrayProp, getModelForClass, Ref } from '@typegoose/typegoose';
+import { prop, arrayProp, getModelForClass, Ref, mongoose } from '@typegoose/typegoose';
 import { Hall, HallCell } from '~/hall/hall.model';
 import { Shop } from '~/shop/shop.model';
 import { Film } from '~/film/film.model';
@@ -40,8 +40,8 @@ export class Ticket {
   @arrayProp({ ref: 'ShopItem' })
   orderedItems: Ref<ShopItem>[];
 
-  @arrayProp({ ref: Seat })
-  seats: Ref<Seat>[];
+  @prop()
+  seats: any[];
 
   @prop()
   phone: string;
