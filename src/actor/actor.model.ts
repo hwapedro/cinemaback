@@ -11,6 +11,9 @@ export class Actor {
 
   @prop()
   bio: string;
+
+  @prop()
+  image: string;
 }
 
 export const ActorModel = getModelForClass(Actor, {

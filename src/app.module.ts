@@ -13,6 +13,7 @@ import { CinemaModule } from './cinema/cinema.module';
 import { AgeRuleModule } from './ageRule/ageRule.module';
 import { ActorModule } from './actor/actor.module';
 import { ShowtimeModule } from './showtime/showtime.module';
+import { ImagesModule } from './images/images.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { ShowtimeModule } from './showtime/showtime.module';
     CinemaModule,
     AgeRuleModule,
     ActorModule,
-    ShowtimeModule
+    ShowtimeModule,
+    ImagesModule
   ],
   controllers: [],
   providers: [],

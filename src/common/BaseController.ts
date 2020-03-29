@@ -1,11 +1,9 @@
 import { PaginationQuery } from "./interfaces";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const Busboy = require('busboy');
+import Busboy from 'busboy';
 
 export default class BaseController {
 
-  constructor () {
+  constructor() {
 
   }
 
@@ -13,7 +11,7 @@ export default class BaseController {
    * @description: need to use everywhere, where api error response is made
    * @param message: string - custom english message
    */
-  protected wrapError (message: string): object {
+  protected wrapError(message: string): object {
     return {
       success: false, message,
     };
@@ -23,7 +21,7 @@ export default class BaseController {
    * @description: need to use everywhere, where api success response is made
    * @param options - additional fields in the response json
    */
-  protected wrapSuccess (options?: object): object {
+  protected wrapSuccess(options?: object): object {
     return {
       success: true,
       ...options,
@@ -53,13 +51,13 @@ export default class BaseController {
     return null;
   }
 
-  protected getHttpFile (req) {
+  protected getHttpFile(req) {
     return new Promise(resolve => {
       const chunks = [];
 
       const busboy = new Busboy({ headers: req.headers });
 
-      busboy.on('file', function(fieldname, file) {
+      busboy.on('file', function (fieldname, file) {
         file.on('data', chunk => chunks.push(chunk));
       });
 
@@ -67,6 +65,54 @@ export default class BaseController {
         resolve(Buffer.concat(chunks));
       });
       req.pipe(busboy);
+    })
+  }
+
+  protected getFileStream(req): Promise<{ fileStream?: NodeJS.ReadableStream, busboy?: busboy.Busboy, uploadError: Error | null }> {
+    return new Promise(resolve => {
+      let resolved = false;
+
+      try {
+        const busboy = new Busboy({
+          headers: req.headers,
+          limits: {
+            files: 1,
+            fileSize: 5 * Math.pow(1024, 2),
+          }
+        });
+
+        busboy.on('file', (fieldname, file, filename, enc, mime) => {
+          if (resolved) {
+            file.resume();
+            return;
+          }
+          if (!(/image\/.+/.test(mime))) {
+            // invalid mime type
+            file.resume();
+            resolved = true;
+            return resolve({
+              uploadError: new Error('Invalid MIME type: ' + mime),
+            });
+          }
+          resolved = true;
+          resolve({ fileStream: file, busboy, uploadError: null });
+        });
+
+        busboy.on('finish', () => {
+          if (!resolved) {
+            resolve({
+              uploadError: new Error('No file passed for upload'),
+            });
+          }
+        });
+
+        req.pipe(busboy);
+
+      } catch (error) {
+        resolve({
+          uploadError: error
+        });
+      }
     })
   }
 }
