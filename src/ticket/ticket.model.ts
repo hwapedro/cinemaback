@@ -5,13 +5,14 @@ import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 import { Cinema } from '~/cinema/cinema.model';
 import { ShopItem } from '~/shopItem/shopItem.model';
 import { HallCell } from '~/hallCell/hallCell.model';
+import { Showtime } from '~/showtime/showtime.model';
 
 export class Seat {
   @prop()
   row: number;
 
   @prop()
-  number: number;
+  cell: number;
 
   @prop({ ref: 'HallCell' })
   type: Ref<HallCell>;
@@ -25,6 +26,9 @@ export class Seat {
 Массив	Текстовый	Текстовый	Текстовый	Идентификатор
  */
 export class Ticket {
+  @prop({ ref: 'Showtime' })
+  showtime: Ref<Showtime>;
+
   @prop()
   time: Date;
 

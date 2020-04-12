@@ -1,8 +1,15 @@
-import { prop, arrayProp, getModelForClass, Ref } from '@typegoose/typegoose';
+import { prop, arrayProp, getModelForClass, Ref, mongoose } from '@typegoose/typegoose';
 import { Hall } from '~/hall/hall.model';
 import { Shop } from '~/shop/shop.model';
 import { Film } from '~/film/film.model';
 import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
+
+class TakenSeat {
+  row: number;
+  cell: number;
+  paid: boolean;
+  until?: number;
+}
 
 export class Showtime {
   @prop()
@@ -13,6 +20,9 @@ export class Showtime {
 
   @prop({ ref: 'Hall' })
   hall: Ref<Hall>;
+
+  @prop({ type: mongoose.Schema.Types.Mixed })
+  taken: TakenSeat[];
 }
 
 export const ShowtimeModel = getModelForClass(Showtime, {
