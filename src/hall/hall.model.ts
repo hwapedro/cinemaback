@@ -1,12 +1,6 @@
 import { prop, arrayProp, Ref, getModelForClass, mongoose } from '@typegoose/typegoose';
 import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 
-export enum HallCell {
-  EMPTY,
-  STANDARD,
-  PREMIUM,
-  VIP
-}
 /*
 Тип	Структура
 Текстовый	Массив
@@ -15,8 +9,8 @@ export class Hall {
   @prop()
   name: string;
 
-  @arrayProp({ items: mongoose.Types.Array })
-  structure: Array<Array<HallCell>>;
+  @arrayProp({ items: mongoose.Schema.Types.Mixed })
+  structure: Array<Array<number>>;
 }
 
 export const HallModel = getModelForClass(Hall, {

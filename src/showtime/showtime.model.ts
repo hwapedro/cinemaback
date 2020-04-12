@@ -11,8 +11,8 @@ export class Showtime {
   @prop({ ref: Film })
   film: Ref<Film>;
 
-  @arrayProp({ ref: 'Hall' })
-  halls: Ref<Hall>[];
+  @prop({ ref: 'Hall' })
+  halls: Ref<Hall>;
 }
 
 export const ShowtimeModel = getModelForClass(Showtime, {

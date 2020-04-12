@@ -14,6 +14,7 @@ import { AgeRuleModule } from './ageRule/ageRule.module';
 import { ActorModule } from './actor/actor.module';
 import { ShowtimeModule } from './showtime/showtime.module';
 import { ImagesModule } from './images/images.module';
+import { HallCellModule } from './hallCell/hallCell.module';
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { ImagesModule } from './images/images.module';
     AgeRuleModule,
     ActorModule,
     ShowtimeModule,
-    ImagesModule
+    ImagesModule,
+    HallCellModule,
   ],
   controllers: [],
   providers: [],

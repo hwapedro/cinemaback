@@ -1,10 +1,10 @@
 import { prop, arrayProp, getModelForClass, Ref, mongoose } from '@typegoose/typegoose';
-import { Hall, HallCell } from '~/hall/hall.model';
-import { Shop } from '~/shop/shop.model';
+import { Hall } from '~/hall/hall.model';
 import { Film } from '~/film/film.model';
 import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 import { Cinema } from '~/cinema/cinema.model';
 import { ShopItem } from '~/shopItem/shopItem.model';
+import { HallCell } from '~/hallCell/hallCell.model';
 
 export class Seat {
   @prop()
@@ -13,8 +13,8 @@ export class Seat {
   @prop()
   number: number;
 
-  @prop({ enum: HallCell })
-  type: HallCell;
+  @prop({ ref: 'HallCell' })
+  type: Ref<HallCell>;
 }
 
 /*

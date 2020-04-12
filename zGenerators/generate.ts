@@ -32,6 +32,11 @@ const { root } = config;
       modelName: 'Comment',
     },
     {
+      name: 'hallCell',
+      plural: 'hallCells',
+      modelName: 'HallCell',
+    },
+    {
       name: 'film',
       plural: 'films',
       modelName: 'Film',

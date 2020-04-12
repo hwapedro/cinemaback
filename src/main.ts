@@ -10,7 +10,6 @@ import { CinemaService } from './cinema/cinema.service';
 import { CommentService } from './comment/comment.service';
 import { GenreService } from './genre/genre.service';
 import { HallService } from './hall/hall.service';
-import { HallCell } from './hall/hall.model';
 import { NewsService } from './news/news.service';
 import { ShopService } from './shop/shop.service';
 import { ShopItemService } from './shopItem/shopItem.service';
@@ -51,8 +50,8 @@ async function bootstrap() {
     const { _id: hallId } = await app.get(HallService).create({
       name: 'Зеленый',
       structure: [
-        [HallCell.STANDARD, HallCell.STANDARD],
-        [HallCell.PREMIUM, HallCell.EMPTY]
+        [1, 1],
+        [2, 1]
       ]
     });
     await app.get(NewsService).create({
@@ -79,7 +78,7 @@ async function bootstrap() {
     });
     const { _id: showtimeId } = await app.get(ShowtimeService).create({
       time: new Date(),
-      halls: [hallId],
+      halls: hallId,
       film: filmId
     });
     const { _id: shopId } = await app.get(ShopService).create({
@@ -107,7 +106,7 @@ async function bootstrap() {
       seats: [{
         row: 1,
         number: 1,
-        type: HallCell.PREMIUM
+        type: 1
       }],
       time: new Date(),
     });
