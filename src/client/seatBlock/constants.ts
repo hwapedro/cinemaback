@@ -1,0 +1,1 @@
+export const SEAT_BLOCK_DURATION_SEC = 60 * 5;

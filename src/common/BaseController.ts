@@ -28,6 +28,13 @@ export default class BaseController {
     };
   }
 
+  protected wrapFail(options?: object): object {
+    return {
+      success: false,
+      ...options,
+    };
+  }
+
   protected createPaginationQuery(page: number, limit: number, maxAllowedLimit: number): PaginationQuery {
     const clampedLimit = Math.min(limit, maxAllowedLimit);
 
