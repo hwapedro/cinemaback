@@ -12,7 +12,7 @@ export class Showtime {
   film: Ref<Film>;
 
   @prop({ ref: 'Hall' })
-  halls: Ref<Hall>;
+  hall: Ref<Hall>;
 }
 
 export const ShowtimeModel = getModelForClass(Showtime, {

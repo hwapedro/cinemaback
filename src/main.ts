@@ -78,7 +78,7 @@ async function bootstrap() {
     });
     const { _id: showtimeId } = await app.get(ShowtimeService).create({
       time: new Date(),
-      halls: hallId,
+      hall: hallId,
       film: filmId
     });
     const { _id: shopId } = await app.get(ShopService).create({
