@@ -2,7 +2,7 @@ import 'module-alias/register';
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import { UserService } from './user/user.service';
 import { ActorService } from './actor/actor.service';
 import { AgeRuleService } from './ageRule/ageRule.service';
@@ -16,17 +16,56 @@ import { ShopItemService } from './shopItem/shopItem.service';
 import { ShowtimeService } from './showtime/showtime.service';
 import { FilmService } from './film/film.service';
 import { TicketService } from './ticket/ticket.service';
-import { Seat } from './ticket/ticket.model';
+import moment from 'moment';
+import { ObjectId } from './types';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors();
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    forbidNonWhitelisted: true,
+    whitelist: true,
+    exceptionFactory: errors => {
+      const totalError: string[] = [];
+      errors.forEach(error => {
+        totalError.push(Object.values(error.constraints).join(', '));
+      })
+      throw new BadRequestException(`Error: ${totalError.join('; ')}`);
+    }
+  }));
 
   await app.listen(+process.env.PORT);
 
   // create test
+  if (false) {
+    const ss = app.get(ShowtimeService);
+    await ss.delete({});
+    await ss.create({
+      time: moment().subtract(2, 'hours').toDate(),
+      hall: '5e92c612ea88031fd4a19366' as any,
+      film: '5e789b9d8b3ca61d387aecfb' as any,
+      taken: [{
+        row: 1,
+        cell: 2,
+        paid: true,
+      }],
+    });
+    await ss.create({
+      time: moment().add(19, 'hours').toDate(),
+      hall: '5e92c612ea88031fd4a19366' as any,
+      film: '5e7cdc3c82ed181c20a3a3be' as any,
+      taken: [{
+        row: 0,
+        cell: 0,
+        paid: true,
+      }, {
+        row: 0,
+        cell: 1,
+        paid: true,
+      }]
+    });
+  }
   if (false) {
     const { _id: actorId } = await app.get(ActorService).create({
       bio: 'Somebody once told me',

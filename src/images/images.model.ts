@@ -1,11 +1,8 @@
 import { prop, arrayProp, getModelForClass, Ref } from '@typegoose/typegoose';
 import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
+import { BaseMongooseModel } from '~/common/BaseModel';
 
-/*
-Заголовок	Текст	Дата	Комментарии
-Текстовый	Текстовый	Дата	Массив
- */
-export class Image {
+export class Image extends BaseMongooseModel {
   @prop()
   url: string;
 }

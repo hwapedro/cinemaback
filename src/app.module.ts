@@ -15,6 +15,7 @@ import { ActorModule } from './actor/actor.module';
 import { ShowtimeModule } from './showtime/showtime.module';
 import { ImagesModule } from './images/images.module';
 import { HallCellModule } from './hallCell/hallCell.module';
+import { ClientModule } from './client/client.module';
 
 @Module({
   imports: [
@@ -34,6 +35,9 @@ import { HallCellModule } from './hallCell/hallCell.module';
     ShowtimeModule,
     ImagesModule,
     HallCellModule,
+
+    // main client API module
+    ClientModule,
   ],
   controllers: [],
   providers: [],

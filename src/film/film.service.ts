@@ -31,4 +31,14 @@ export class FilmService {
   raw() {
     return FilmModel;
   }
+
+  wrap(film: Film): Film & any {
+    return {
+      ...film,
+      _id: film._id.toString(),
+      releaseDate: film.releaseDate.getTime(),
+      distributionEndDate: film.distributionStartDate.getTime(),
+      distributionStartDate: film.distributionStartDate.getTime(),
+    };
+  }
 }

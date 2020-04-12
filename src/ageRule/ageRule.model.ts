@@ -1,7 +1,8 @@
 import { prop, getModelForClass } from '@typegoose/typegoose';
 import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
+import { BaseMongooseModel } from '~/common/BaseModel';
 
-export class AgeRule {
+export class AgeRule extends BaseMongooseModel {
   @prop()
   name: string;
 }

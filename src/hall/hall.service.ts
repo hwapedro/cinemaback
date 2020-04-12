@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ModelUpdateOptions } from 'mongoose';
 import { HallModel, Hall } from './hall.model';
+import _ from 'lodash';
 
 @Injectable()
 export class HallService {
@@ -30,5 +31,12 @@ export class HallService {
 
   raw() {
     return HallModel;
+  }
+
+  wrap(hall: Hall, exclude: string[] = []): Hall & any {
+    const o: any = { ..._.omit(hall, exclude) };
+    if (!exclude.includes('_id'))
+      o['_id'] = hall._id.toString();
+    return o;
   }
 }

@@ -1,7 +1,11 @@
-import { prop, getModelForClass } from '@typegoose/typegoose';
+import { prop, index, getModelForClass } from '@typegoose/typegoose';
 import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
+import { BaseMongooseModel } from '~/common/BaseModel';
 
-export class HallCell {
+@index({
+  index: 1,
+}, { unique: true })
+export class HallCell extends BaseMongooseModel {
   @prop()
   name: string;
 

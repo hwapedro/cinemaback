@@ -3,6 +3,7 @@ import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 import { AgeRule } from '~/ageRule/ageRule.model';
 import { Actor } from '~/actor/actor.model';
 import { Genre } from '~/genre/genre.model';
+import { BaseMongooseModel } from '~/common/BaseModel';
 
 /*
 Наименование	Дата выпуска	Дата начала проката	Дата  окончания проката	Описание
@@ -11,7 +12,7 @@ import { Genre } from '~/genre/genre.model';
 Актеры	Жанры	Длительность	Возрастное ограничение	Сеансы
 Массив	Массив	Числовой	Идентификатор	Массив
  */
-export class Film {
+export class Film extends BaseMongooseModel {
   @prop()
   name: string;
 

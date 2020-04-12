@@ -4,12 +4,13 @@ import { Shop } from '~/shop/shop.model';
 import { Film } from '~/film/film.model';
 import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 import { Showtime } from '~/showtime/showtime.model';
+import { BaseMongooseModel } from '~/common/BaseModel';
 
 /*
 Наименование	Залы	Магазины	Адрес	Фильмы
 Текстовый	Массив	Массив	Текстовый	Массив
  */
-export class Cinema {
+export class Cinema extends BaseMongooseModel {
   @prop()
   name: string;
 

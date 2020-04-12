@@ -6,8 +6,9 @@ import { Cinema } from '~/cinema/cinema.model';
 import { ShopItem } from '~/shopItem/shopItem.model';
 import { HallCell } from '~/hallCell/hallCell.model';
 import { Showtime } from '~/showtime/showtime.model';
+import { BaseMongooseModel } from '~/common/BaseModel';
 
-export class Seat {
+export class Seat extends BaseMongooseModel {
   @prop()
   row: number;
 
@@ -25,7 +26,7 @@ export class Seat {
 Места	Телефон	Фамилия	Имя	Зал
 Массив	Текстовый	Текстовый	Текстовый	Идентификатор
  */
-export class Ticket {
+export class Ticket extends BaseMongooseModel {
   @prop({ ref: 'Showtime' })
   showtime: Ref<Showtime>;
 

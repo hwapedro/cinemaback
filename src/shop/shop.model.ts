@@ -1,12 +1,13 @@
 import { prop, arrayProp, getModelForClass, Ref } from '@typegoose/typegoose';
 import { ShopItem } from '~/shopItem/shopItem.model';
 import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
+import { BaseMongooseModel } from '~/common/BaseModel';
 
 /*
 Наименование	Описание	Товары
 Текстовый	Текстовый	Массив
  */
-export class Shop {
+export class Shop extends BaseMongooseModel {
   @prop()
   name: string;
 

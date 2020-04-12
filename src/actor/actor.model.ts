@@ -1,11 +1,12 @@
 import { prop, getModelForClass } from '@typegoose/typegoose';
 import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
+import { BaseMongooseModel } from '~/common/BaseModel';
 
 /*
 Фамилия	Имя	Биография
 Текстовый	Текстовый	Текстовый
  */
-export class Actor {
+export class Actor extends BaseMongooseModel {
   @prop()
   name: string;
 
