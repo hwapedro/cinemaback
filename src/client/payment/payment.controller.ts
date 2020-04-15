@@ -45,10 +45,10 @@ export class PaymentController extends BaseController {
       });
     }
     // block seats for 5 mins -- give user time to pay
-    const payUntil = await this.paymentService.blockSeats(showtime, seats);
+    const blockDuration = await this.paymentService.blockSeats(showtime, seats);
 
     return this.wrapSuccess({
-      payUntil
+      blockDuration
     });
   }
 

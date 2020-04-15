@@ -1,8 +1,13 @@
 import { WithCinema } from '~/client/common/validators';
-import { IsString, IsNotEmpty, Matches } from 'class-validator';
+import { IsString, IsNotEmpty, Matches, IsMongoId } from 'class-validator';
 
 export class ScheduleCalendarQueryValidator extends WithCinema {
 
+}
+export class GetShowtimeValidator {
+  @IsNotEmpty()
+  @IsMongoId()
+  id: string;
 }
 
 export class ShowtimeQueryValidator  {

@@ -7,7 +7,7 @@ import { QueryValidator } from '~/common/validators';
 import { ScheduleService } from './schedule.service';
 import { ShowtimeService } from '~/showtime/showtime.service';
 import { ShowtimeModel, Showtime } from '~/showtime/showtime.model';
-import { ShowtimeQueryValidator } from './validators';
+import { ShowtimeQueryValidator, GetShowtimeValidator } from './validators';
 import { FilmService } from '~/film/film.service';
 import { HallService } from '~/hall/hall.service';
 import { HallCellService } from '~/hallCell/hallCell.service';
@@ -53,8 +53,31 @@ export class ScheduleController extends BaseController {
     });
   }
 
+  @Get('/showtime/:id')
+  async getShowtimeById(
+    @Param() params: GetShowtimeValidator,
+  ) {
+    const showtime = await this.showtimeService.findById(params.id);
+    if (!showtime) {
+      return this.wrapError('No showtime');
+    }
+    const film = await this.filmService.findById(oidToString(showtime.film))
+      .lean<Film>()
+      .exec();
+
+    const hall = await this.hallService.findById(oidToString(showtime.hall)).lean<Hall>().exec();
+    const hallCells = await this.hallService.getCells(hall);
+
+    return this.wrapSuccess({
+      showtime,
+      film,
+      hall,
+      hallCells,
+    });
+  }
+
   @Get('/showtime')
-  async getShowtime(
+  async getShowtimes(
     @Query() showtimeQuery: ShowtimeQueryValidator
   ) {
     log.mark('query is', showtimeQuery);

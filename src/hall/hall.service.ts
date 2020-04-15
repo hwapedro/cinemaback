@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { ModelUpdateOptions } from 'mongoose';
 import { HallModel, Hall } from './hall.model';
 import _ from 'lodash';
+import { HallCell } from '~/hallCell/hallCell.model';
+import { HallCellService } from '~/hallCell/hallCell.service';
 
 @Injectable()
 export class HallService {
   constructor(
-
+      @Inject(forwardRef(() => HallCellService)) private hallCellService: HallCellService,
   ) { }
 
   create(body: Partial<Hall>) {
@@ -31,6 +33,13 @@ export class HallService {
 
   raw() {
     return HallModel;
+  }
+
+  async getCells(hall: Hall): Promise<HallCell[]> {
+    const r = new Set<number>(hall.structure.flatMap(row => row));
+    return await this.hallCellService.find({
+      index: { $in: Array.from(r.values()) }
+    }).lean().exec();
   }
 
   wrap(hall: Hall, exclude: string[] = []): Hall & any {

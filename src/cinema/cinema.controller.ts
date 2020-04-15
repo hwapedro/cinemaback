@@ -22,6 +22,9 @@ export class CinemaController extends BaseController {
   ) {
     const cinema = await this.cinemaService.findById(id)
       .lean()
+      .populate('halls')
+      .populate('shops')
+      .populate('films')
       .exec();
     return this.wrapSuccess({
       cinema,
@@ -41,6 +44,10 @@ export class CinemaController extends BaseController {
     if (query.skip) {
       findQuery = findQuery.skip(query.skip);
     }
+    findQuery
+      .populate('halls')
+      .populate('shops')
+      .populate('films')
     const count = await this.cinemaService.find(query.conditions).countDocuments().exec();
     const cinemas = await findQuery.exec();
     return this.wrapSuccess({
