@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, HttpModule } from '@nestjs/common';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { TicketModule } from './ticket/ticket.module';
@@ -35,7 +35,6 @@ import { ClientModule } from './client/client.module';
     ShowtimeModule,
     ImagesModule,
     HallCellModule,
-
     // main client API module
     ClientModule,
   ],

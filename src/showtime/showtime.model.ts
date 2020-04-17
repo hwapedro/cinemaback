@@ -22,7 +22,7 @@ export class Showtime extends BaseMongooseModel {
   @prop({ ref: 'Hall' })
   hall: Ref<Hall>;
 
-  @prop({ type: mongoose.Schema.Types.Mixed })
+  @prop({ type: mongoose.Schema.Types.Mixed, default: [] })
   taken: TakenSeat[];
 }
 

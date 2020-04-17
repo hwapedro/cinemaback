@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module, forwardRef, HttpModule } from '@nestjs/common';
 import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
 import { ShowtimeModule } from '~/showtime/showtime.module';
@@ -10,6 +10,7 @@ import { ShopModule } from '~/shop/shop.module';
 
 @Module({
   imports: [
+    HttpModule,
     forwardRef(() => ShowtimeModule),
     forwardRef(() => FilmModule),
     forwardRef(() => HallModule),

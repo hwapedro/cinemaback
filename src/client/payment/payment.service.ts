@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpService } from '@nestjs/common';
 import { Showtime } from '~/showtime/showtime.model';
 import { PaymentSeat } from './validators';
 import { DocumentType } from '@typegoose/typegoose';
@@ -6,10 +6,19 @@ import { SEAT_BLOCK_DURATION_SEC } from '../seatBlock/constants';
 import { SeatBlock, SeatBlockModel } from '../seatBlock/seatBlock.model';
 import log from 'color-log';
 import uniqid from 'uniqid';
+import PaypalCheckoutSDK from '@paypal/checkout-server-sdk';
+
+const PAYPAL_URL = process.env.LOCAL ? 'https://api.sandbox.paypal.com' : 'https://api.sandbox.paypal.com';
+let clientId = process.env.PAYPAL_CLIENT_ID;
+let clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+let environment = new PaypalCheckoutSDK.core.SandboxEnvironment(clientId, clientSecret);
+let client = new PaypalCheckoutSDK.core.PayPalHttpClient(environment);
+console.log(clientId, client);
 
 @Injectable()
 export class PaymentService {
   constructor(
+    private httpService: HttpService,
   ) { }
 
   async seatsAreFree(showtime: Showtime, seats: PaymentSeat[]): Promise<PaymentSeat[]> {
@@ -32,6 +41,7 @@ export class PaymentService {
 
   async blockSeats(showtime: DocumentType<Showtime>, seats: PaymentSeat[]): Promise<[number, string]> {
     const blockId = uniqid();
+    showtime.taken = showtime.taken || [];
     for (const seat of seats) {
       showtime.taken.push({
         ...seat,
@@ -50,12 +60,29 @@ export class PaymentService {
     return [SEAT_BLOCK_DURATION_SEC, blockId];
   }
 
+  async captureTransaction(orderId: string): Promise<[boolean, Error | string]> {
+    try {
+      const request = new PaypalCheckoutSDK.orders.OrdersCaptureRequest(orderId);
+      request.requestBody({});
+      request.path = request.path.slice(0, -1);
+      console.log(request);
+      let response = await client.execute(request);
+      // const { data } = await this.httpService.post(`${PAYPAL_URL}${request.path}`, request.body).toPromise();
+      log.mark(response);
+      // 4. Save the capture ID to your database. Implement logic to save capture to your database for future reference.
+      const captureID = response.result.purchase_units[0].payments.captures[0].id;
+      return [true, captureID];
+    } catch (err) {
+      console.error(err);
+      return [false, err];
+    }
+  }
+
   async validateBlock(blockId: string) {
     const blocks = await SeatBlockModel.find({
       blockId,
     }).lean().exec();
     return blocks;
-
   }
 
   serializeSeat(seat: PaymentSeat): string {

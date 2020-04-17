@@ -54,6 +54,9 @@ export class Ticket extends BaseMongooseModel {
   @prop({ ref: 'Cinema' })
   cinema: Ref<Cinema>;
 
+  @prop()
+  transactionId: string;
+
   @arrayProp({ items: BoughtItem })
   orderedItems: BoughtItem[];
 

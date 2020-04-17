@@ -78,8 +78,8 @@ export class PaymentController extends BaseController {
     }
 
     // find ordered items
-    const [allGood, statusOrBoguth, badItems] = await this.shopService.validateOrder(orderedItems);
-    if (!allGood) {
+    const [orderOk, statusOrBoguth, badItems] = await this.shopService.validateOrder(orderedItems);
+    if (!orderOk) {
       return this.wrapFail({
         status: statusOrBoguth,
         items: badItems
@@ -94,9 +94,15 @@ export class PaymentController extends BaseController {
       });
     }
 
+    const [transactionCaptured, transactionId] = await this.paymentService.captureTransaction(orderId);
+    if (!transactionCaptured) {
+      return this.wrapError((transactionId as Error).message);
+    }
+
     await this.ticketService.create({
       firstName,
       lastName,
+      transactionId: transactionId as string,
       orderedItems: statusOrBoguth as BoughtItem[],
     });
     showtime.taken.push(...blockedSeats.map(seat => {

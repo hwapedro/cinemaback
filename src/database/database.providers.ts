@@ -8,6 +8,7 @@ export const databaseProviders = [
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useFindAndModify: true,
+        useCreateIndex: true,
       }),
   },
 ];
