@@ -12,6 +12,9 @@ export class SeatBlock extends BaseMongooseModel {
   @prop()
   seat: string;
 
+  @prop()
+  blockId: string;
+
   @prop({ ref: 'Showtime' })
   showtime: Ref<Showtime>;
 }

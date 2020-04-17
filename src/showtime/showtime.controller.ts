@@ -22,6 +22,8 @@ export class ShowtimeController extends BaseController {
   ) {
     const showtime = await this.showtimeService.findById(id)
       .lean()
+      .populate('film')
+      .populate('hall')
       .exec();
     return this.wrapSuccess({
       showtime,
@@ -34,7 +36,10 @@ export class ShowtimeController extends BaseController {
     @Body() query: QueryValidator,
     @Req() req,
   ) {
-    let findQuery = this.showtimeService.find(query.conditions).lean();
+    let findQuery = this.showtimeService.find(query.conditions)
+      .populate('film')
+      .populate('hall')
+      .lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);
     }
@@ -71,6 +76,8 @@ export class ShowtimeController extends BaseController {
   ) {
     const updated = await this.showtimeService.raw()
       .findByIdAndUpdate(id, body, { new: true })
+      .populate('film')
+      .populate('hall')
       .lean()
       .exec();
     return this.wrapSuccess({

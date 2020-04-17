@@ -22,6 +22,9 @@ export class FilmController extends BaseController {
   ) {
     const film = await this.filmService.findById(id)
       .lean()
+      .populate('actors')
+      .populate('genres')
+      .populate('ageRule')
       .exec();
     return this.wrapSuccess({
       film,
@@ -34,7 +37,11 @@ export class FilmController extends BaseController {
     @Body() query: QueryValidator,
     @Req() req,
   ) {
-    let findQuery = this.filmService.find(query.conditions).lean();
+    let findQuery = this.filmService.find(query.conditions)
+    .populate('actors')
+    .populate('genres')
+    .populate('ageRule')
+    .lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);
     }
@@ -71,6 +78,9 @@ export class FilmController extends BaseController {
   ) {
     const updated = await this.filmService.raw()
       .findByIdAndUpdate(id, body, { new: true })
+      .populate('actors')
+      .populate('genres')
+      .populate('ageRule')
       .lean()
       .exec();
     return this.wrapSuccess({

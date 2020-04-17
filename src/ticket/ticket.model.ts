@@ -19,6 +19,18 @@ export class Seat extends BaseMongooseModel {
   type: Ref<HallCell>;
 }
 
+export class BoughtItem extends BaseMongooseModel {
+  @prop({ ref: 'ShopItem' })
+  item: Ref<ShopItem>
+
+  @prop()
+  quantity: number;
+
+  @prop()
+  price: number;
+}
+
+
 /*
 Дата и время	Цена	Фильм	Кинотеатр	Заказанные позиции
 Дата	Числовой	Идентификатор	Идентификатор	Массив
@@ -42,8 +54,8 @@ export class Ticket extends BaseMongooseModel {
   @prop({ ref: 'Cinema' })
   cinema: Ref<Cinema>;
 
-  @arrayProp({ ref: 'ShopItem' })
-  orderedItems: Ref<ShopItem>[];
+  @arrayProp({ items: BoughtItem })
+  orderedItems: BoughtItem[];
 
   @prop()
   seats: any[];

@@ -5,6 +5,7 @@ import { DocumentType } from '@typegoose/typegoose';
 import { SEAT_BLOCK_DURATION_SEC } from '../seatBlock/constants';
 import { SeatBlock, SeatBlockModel } from '../seatBlock/seatBlock.model';
 import log from 'color-log';
+import uniqid from 'uniqid';
 
 @Injectable()
 export class PaymentService {
@@ -29,7 +30,8 @@ export class PaymentService {
     return [];
   }
 
-  async blockSeats(showtime: DocumentType<Showtime>, seats: PaymentSeat[]): Promise<number> {
+  async blockSeats(showtime: DocumentType<Showtime>, seats: PaymentSeat[]): Promise<[number, string]> {
+    const blockId = uniqid();
     for (const seat of seats) {
       showtime.taken.push({
         ...seat,
@@ -39,12 +41,21 @@ export class PaymentService {
       // insert new block
       const block = await SeatBlockModel.create({
         createdAt: new Date(),
+        blockId,
         seat: this.serializeSeat(seat),
         showtime: showtime._id,
       });
     }
     await showtime.save();
-    return SEAT_BLOCK_DURATION_SEC;
+    return [SEAT_BLOCK_DURATION_SEC, blockId];
+  }
+
+  async validateBlock(blockId: string) {
+    const blocks = await SeatBlockModel.find({
+      blockId,
+    }).lean().exec();
+    return blocks;
+
   }
 
   serializeSeat(seat: PaymentSeat): string {

@@ -24,6 +24,15 @@ export class StartPaymentValidator {
   seats: PaymentSeat[];
 }
 
+export class OrderedItemValidator {
+  @IsMongoId()
+  item: string;
+
+  @IsInt()
+  quantity: number;
+}
+
+
 export class SubmitPaymentValidator {
   @IsString()
   @IsNotEmpty()
@@ -38,11 +47,18 @@ export class SubmitPaymentValidator {
   @IsNotEmpty()
   lastName: string;
 
+  @IsArray()
+  orderedItems: OrderedItemValidator[];
+
   @IsString()
   @IsNotEmpty()
   phone: string;
 
   @IsString()
   @IsNotEmpty()
-  transactionId: string;
+  blockId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  orderId: string;
 }

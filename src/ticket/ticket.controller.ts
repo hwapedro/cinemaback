@@ -5,6 +5,11 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { QueryValidator } from '~/common/validators';
 
+const applyPopulate = q => q.populate('film')
+  .populate('cinema')
+  .populate('hall')
+  .populate('showtime');
+
 @Controller('api/v1/tickets')
 @ApiTags('auth')
 export class TicketController extends BaseController {
@@ -20,7 +25,7 @@ export class TicketController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    const ticket = await this.ticketService.findById(id)
+    const ticket = await applyPopulate(this.ticketService.findById(id))
       .lean()
       .exec();
     return this.wrapSuccess({
@@ -34,7 +39,7 @@ export class TicketController extends BaseController {
     @Body() query: QueryValidator,
     @Req() req,
   ) {
-    let findQuery = this.ticketService.find(query.conditions).lean();
+    let findQuery = applyPopulate(this.ticketService.find(query.conditions)).lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);
     }
@@ -69,8 +74,7 @@ export class TicketController extends BaseController {
     @Body() body,
     @Req() req,
   ) {
-    const updated = await this.ticketService.raw()
-      .findByIdAndUpdate(id, body, { new: true })
+    const updated = await applyPopulate(this.ticketService.raw().findByIdAndUpdate(id, body, { new: true }))
       .lean()
       .exec();
     return this.wrapSuccess({

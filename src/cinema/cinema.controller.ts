@@ -78,6 +78,9 @@ export class CinemaController extends BaseController {
   ) {
     const updated = await this.cinemaService.raw()
       .findByIdAndUpdate(id, body, { new: true })
+      .populate('halls')
+      .populate('shops')
+      .populate('films')
       .lean()
       .exec();
     return this.wrapSuccess({

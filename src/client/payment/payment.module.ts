@@ -5,6 +5,8 @@ import { ShowtimeModule } from '~/showtime/showtime.module';
 import { FilmModule } from '~/film/film.module';
 import { HallModule } from '~/hall/hall.module';
 import { HallCellModule } from '~/hallCell/hallCell.module';
+import { TicketModule } from '~/ticket/ticket.module';
+import { ShopModule } from '~/shop/shop.module';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { HallCellModule } from '~/hallCell/hallCell.module';
     forwardRef(() => FilmModule),
     forwardRef(() => HallModule),
     forwardRef(() => HallCellModule),
+    forwardRef(() => TicketModule),
+    forwardRef(() => ShopModule),
   ],
   controllers: [
     PaymentController

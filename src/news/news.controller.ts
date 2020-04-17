@@ -22,6 +22,7 @@ export class NewsController extends BaseController {
   ) {
     const news = await this.newsService.findById(id)
       .lean()
+      .populate('comments')
       .exec();
     return this.wrapSuccess({
       news,
@@ -34,7 +35,9 @@ export class NewsController extends BaseController {
     @Body() query: QueryValidator,
     @Req() req,
   ) {
-    let findQuery = this.newsService.find(query.conditions).lean();
+    let findQuery = this.newsService.find(query.conditions)
+      .populate('comments')
+      .lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);
     }
@@ -71,6 +74,7 @@ export class NewsController extends BaseController {
   ) {
     const updated = await this.newsService.raw()
       .findByIdAndUpdate(id, body, { new: true })
+      .populate('comments')
       .lean()
       .exec();
     return this.wrapSuccess({

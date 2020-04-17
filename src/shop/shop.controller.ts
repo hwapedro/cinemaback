@@ -22,6 +22,7 @@ export class ShopController extends BaseController {
   ) {
     const shop = await this.shopService.findById(id)
       .lean()
+      .populate('items')
       .exec();
     return this.wrapSuccess({
       shop,
@@ -34,7 +35,9 @@ export class ShopController extends BaseController {
     @Body() query: QueryValidator,
     @Req() req,
   ) {
-    let findQuery = this.shopService.find(query.conditions).lean();
+    let findQuery = this.shopService.find(query.conditions)
+      .populate('items')
+      .lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);
     }
@@ -71,6 +74,7 @@ export class ShopController extends BaseController {
   ) {
     const updated = await this.shopService.raw()
       .findByIdAndUpdate(id, body, { new: true })
+      .populate('items')
       .lean()
       .exec();
     return this.wrapSuccess({

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ModelUpdateOptions } from 'mongoose';
+import { ModelUpdateOptions, DocumentQuery } from 'mongoose';
 import { CinemaModel, Cinema } from './cinema.model';
 
 @Injectable()

@@ -23,7 +23,7 @@ export class Film extends BaseMongooseModel {
   // in minutes
   duration: number;
 
-  @prop({ ref: AgeRule })
+  @prop({ ref: 'AgeRule' })
   ageRule: Ref<AgeRule>;
 
   @prop()
