@@ -48,7 +48,6 @@ async function bootstrap() {
       taken: [{
         row: 1,
         cell: 2,
-        paid: true,
       }],
     });
     await ss.create({
@@ -58,11 +57,9 @@ async function bootstrap() {
       taken: [{
         row: 0,
         cell: 0,
-        paid: true,
       }, {
         row: 0,
         cell: 1,
-        paid: true,
       }]
     });
   }

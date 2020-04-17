@@ -8,8 +8,6 @@ import { BaseMongooseModel } from '~/common/BaseModel';
 class TakenSeat {
   row: number;
   cell: number;
-  paid: boolean;
-  until?: number;
 }
 
 export class Showtime extends BaseMongooseModel {

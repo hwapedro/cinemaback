@@ -13,7 +13,6 @@ let clientId = process.env.PAYPAL_CLIENT_ID;
 let clientSecret = process.env.PAYPAL_CLIENT_SECRET;
 let environment = new PaypalCheckoutSDK.core.SandboxEnvironment(clientId, clientSecret);
 let client = new PaypalCheckoutSDK.core.PayPalHttpClient(environment);
-console.log(clientId, client);
 
 @Injectable()
 export class PaymentService {
@@ -36,6 +35,16 @@ export class PaymentService {
         };
       });
     }
+
+    // check in showtime
+    const takenInShowtime = seats.filter(seat => {
+      const takenSeat = showtime.taken.find(el => el.row === seat.row && el.cell === seat.cell);
+      return takenSeat;
+    })
+    if (takenInShowtime.length) {
+      // some seat is taken
+      return takenInShowtime;
+    }
     return [];
   }
 
@@ -43,11 +52,6 @@ export class PaymentService {
     const blockId = uniqid();
     showtime.taken = showtime.taken || [];
     for (const seat of seats) {
-      showtime.taken.push({
-        ...seat,
-        paid: false,
-        until: Date.now() + SEAT_BLOCK_DURATION_SEC,
-      });
       // insert new block
       const block = await SeatBlockModel.create({
         createdAt: new Date(),
@@ -58,6 +62,12 @@ export class PaymentService {
     }
     await showtime.save();
     return [SEAT_BLOCK_DURATION_SEC, blockId];
+  }
+
+  async removeBlock(blockId: string) {
+    await SeatBlockModel.deleteMany({
+      blockId,
+    }).exec();
   }
 
   async captureTransaction(orderId: string): Promise<[boolean, Error | string]> {
@@ -73,8 +83,9 @@ export class PaymentService {
       const captureID = response.result.purchase_units[0].payments.captures[0].id;
       return [true, captureID];
     } catch (err) {
-      console.error(err);
-      return [false, err];
+      log.error(err);
+      const errorStr = JSON.parse(err.message);
+      return [false, `${errorStr.name}: ${errorStr.details[0].description}`];
     }
   }
 

@@ -14,6 +14,8 @@ import { Showtime } from '~/showtime/showtime.model';
 import { TicketService } from '~/ticket/ticket.service';
 import { ShopService } from '~/shop/shop.service';
 import { BoughtItem } from '~/ticket/ticket.model';
+import { Film } from '~/film/film.model';
+import { Hall } from '~/hall/hall.model';
 
 @Controller('client/api/v1/payment')
 @ApiTags('client/payment')
@@ -72,10 +74,22 @@ export class PaymentController extends BaseController {
       showtimeId,
     } = body;
     // validate that purchase is valid
-    const showtime = await this.showtimeService.findById(showtimeId).exec();
+    const showtime = await this.showtimeService.findById(showtimeId)
+      .populate('hall')
+      .populate('film')
+      .exec();
+
     if (!showtime) {
       return this.wrapError('Invalid showtime');
     }
+    const hallCells = await this.hallCellService.find({}).lean().exec();
+    const hall: Hall = showtime.hall as any;
+    const film: Film = showtime.film as any;
+
+    const { time } = showtime;
+
+    const hallId = hall._id;
+    const filmId = film._id;
 
     // find ordered items
     const [orderOk, statusOrBoguth, badItems] = await this.shopService.validateOrder(orderedItems);
@@ -99,21 +113,39 @@ export class PaymentController extends BaseController {
       return this.wrapError((transactionId as Error).message);
     }
 
-    await this.ticketService.create({
-      firstName,
-      lastName,
-      transactionId: transactionId as string,
-      orderedItems: statusOrBoguth as BoughtItem[],
-    });
-    showtime.taken.push(...blockedSeats.map(seat => {
+    const approvedSeats = blockedSeats.map(seat => {
       const [row, cell] = this.paymentService.deserializeSeat(seat.seat);
       return {
         row,
         cell,
-        paid: true,
       };
-    }));
-    await showtime.save();
+    });
+    const priceSeats = approvedSeats.reduce((acc, curr) => acc + hallCells[hall.structure[curr.row][curr.cell]].price, 0);
+    const priceShopItems = (statusOrBoguth as BoughtItem[]).reduce((acc, curr) => acc + curr.price, 0);
+    const totalPrice = priceSeats + priceShopItems;
+
+    await this.ticketService.create({
+      firstName,
+      lastName,
+      phone,
+      transactionId: transactionId as string,
+      orderedItems: statusOrBoguth as BoughtItem[],
+      seats: approvedSeats,
+      price: totalPrice,
+      // cinema: 'todo' as any,
+      film: filmId as any,
+      hall: hallId as any,
+      time,
+    });
+    showtime.taken.push(...approvedSeats);
+    await this.showtimeService.update({
+      _id: showtime._id.toString(),
+    }, {
+      $push: { taken: approvedSeats }
+    });
+
+    // remove block
+    await this.paymentService.removeBlock(blockId);
   }
 }
 
