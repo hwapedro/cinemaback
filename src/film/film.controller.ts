@@ -38,10 +38,10 @@ export class FilmController extends BaseController {
     @Req() req,
   ) {
     let findQuery = this.filmService.find(query.conditions)
-    .populate('actors')
-    .populate('genres')
-    .populate('ageRule')
-    .lean();
+      .populate('actors')
+      .populate('genres')
+      .populate('ageRule')
+      .lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);
     }
@@ -64,6 +64,11 @@ export class FilmController extends BaseController {
     @Req() req,
   ) {
     const film = await this.filmService.create(body);
+    await film
+      .populate('actors')
+      .populate('genres')
+      .populate('ageRule')
+      .execPopulate();
     return this.wrapSuccess({
       film
     });

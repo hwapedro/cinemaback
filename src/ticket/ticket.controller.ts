@@ -62,6 +62,8 @@ export class TicketController extends BaseController {
     @Req() req,
   ) {
     const ticket = await this.ticketService.create(body);
+    await applyPopulate(ticket)
+      .execPopulate();
     return this.wrapSuccess({
       ticket
     });

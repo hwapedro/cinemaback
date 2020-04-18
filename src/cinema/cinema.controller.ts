@@ -64,6 +64,11 @@ export class CinemaController extends BaseController {
     @Req() req,
   ) {
     const cinema = await this.cinemaService.create(body);
+    await cinema
+      .populate('halls')
+      .populate('shops')
+      .populate('films')
+      .execPopulate();
     return this.wrapSuccess({
       cinema
     });

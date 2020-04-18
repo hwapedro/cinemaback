@@ -60,6 +60,9 @@ export class NewsController extends BaseController {
     @Req() req,
   ) {
     const news = await this.newsService.create(body);
+    await news
+      .populate('comments')
+      .execPopulate()
     return this.wrapSuccess({
       news
     });

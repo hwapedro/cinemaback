@@ -60,6 +60,9 @@ export class ShopController extends BaseController {
     @Req() req,
   ) {
     const shop = await this.shopService.create(body);
+    await shop
+      .populate('items')
+      .execPopulate();
     return this.wrapSuccess({
       shop
     });

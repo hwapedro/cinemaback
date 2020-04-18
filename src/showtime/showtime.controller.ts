@@ -62,6 +62,10 @@ export class ShowtimeController extends BaseController {
     @Req() req,
   ) {
     const showtime = await this.showtimeService.create(body);
+    await showtime
+      .populate('film')
+      .populate('hall')
+      .execPopulate();
     return this.wrapSuccess({
       showtime
     });
