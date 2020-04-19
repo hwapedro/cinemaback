@@ -81,11 +81,14 @@ export class ScheduleController extends BaseController {
     @Query() showtimeQuery: ShowtimeQueryValidator
   ) {
     log.mark('query is', showtimeQuery);
+    const { cinema: cinemaId } = showtimeQuery;
+
     const from = moment.utc(showtimeQuery.from).startOf('day');
     const showtimesByDate: ShowtimeAggregation = await this.showtimeService.raw()
       .aggregate([
         {
           $match: {
+            cinema: cinemaId,
             time: {
               $gte: from.toDate(),
               $lte: from.add(7, 'days').toDate(),

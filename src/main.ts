@@ -18,6 +18,7 @@ import { FilmService } from './film/film.service';
 import { TicketService } from './ticket/ticket.service';
 import moment from 'moment';
 import { ObjectId } from './types';
+import log from 'color-log';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -29,7 +30,8 @@ async function bootstrap() {
     exceptionFactory: errors => {
       const totalError: string[] = [];
       errors.forEach(error => {
-        totalError.push(Object.values(error.constraints).join(', '));
+        log.error(error);
+        totalError.push(error.constraints ? Object.values(error.constraints).join(', ') : `something wrong with ${error.property}`);
       })
       throw new BadRequestException(`Error: ${totalError.join('; ')}`);
     }

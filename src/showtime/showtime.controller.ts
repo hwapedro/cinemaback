@@ -1,15 +1,23 @@
-import { Controller, Get, Param, Req, Res, UseGuards, Post, Body, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Param, Req, Res, UseGuards, Post, Body, Put, Delete, Inject, forwardRef } from '@nestjs/common';
 import { ShowtimeService } from './showtime.service';
 import BaseController from '../common/BaseController';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { QueryValidator } from '~/common/validators';
+import { CreateManyShowtimesValidator } from './validators';
+import { FilmService } from '~/film/film.service';
+import { HallService } from '~/hall/hall.service';
+import { TIME_BETWEEN_SHOWTIMES } from './constants';
+import moment from 'moment';
+import log from 'color-log';
 
 @Controller('api/v1/showtimes')
 @ApiTags('auth')
 export class ShowtimeController extends BaseController {
   constructor(
     private readonly showtimeService: ShowtimeService,
+    @Inject(forwardRef(() => FilmService)) private filmService: FilmService,
+    @Inject(forwardRef(() => HallService)) private hallService: HallService,
   ) {
     super();
   }
@@ -69,6 +77,137 @@ export class ShowtimeController extends BaseController {
     return this.wrapSuccess({
       showtime
     });
+  }
+
+  @Post('/many')
+  @UseGuards(AuthGuard('jwt'))
+  async createMany(
+    @Body() body: CreateManyShowtimesValidator,
+    @Req() req,
+  ) {
+    const { showtimes } = body;
+    const { film: filmId, hall: hallId, } = showtimes[0];
+    const film = await this.filmService.findById(filmId).lean().exec();
+    const hall = await this.hallService.findById(hallId).lean().exec();
+    if (!film) {
+      return this.wrapFail({
+        status: 'invalid-film'
+      });
+    }
+    if (!hall) {
+      return this.wrapFail({
+        status: 'invalid-hall'
+      });
+    }
+
+    const tbs = TIME_BETWEEN_SHOWTIMES;
+    // there should NOT be any showtimes in between
+    // S - TBS and S + film.duration + TBS
+    const projectInfo = {
+      _id: 1,
+      film: 1,
+      hall: 1,
+      time: 1
+    };
+    for (const showtime of showtimes) {
+      const startTime = moment(showtime.time).subtract(tbs, 'minutes');
+      const endTime = moment(showtime.time).add(film.duration, 'minutes').add(tbs, 'minutes');
+      const pipelines = [
+        {
+          $match: { hall: hall._id }
+        },
+        {
+          $lookup: {
+            from: 'films',
+            localField: 'film',
+            foreignField: '_id',
+            as: 'film'
+          }
+        },
+        {
+          $unwind: {
+            path: '$film',
+          }
+        },
+        {
+          $project: {
+            showtimeEndTime: {
+              $add: ['$time', {
+                $multiply: [
+                  '$film.duration',
+                  1000 * 60
+                ]
+              }]
+            },
+            ...projectInfo
+          }
+        },
+        {
+          $project: {
+            ...projectInfo,
+            showtimeEndTime: 1,
+            showtimeEnds: {
+              $cond: {
+                if: {
+                  $and: [
+                    { $gt: ['$showtimeEndTime', startTime.toDate()] },
+                    { $lt: ['$showtimeEndTime', endTime.toDate()] }
+                  ]
+                },
+                then: true,
+                else: false,
+              }
+            },
+            showtimeStarts: {
+              $cond: {
+                if: {
+                  $and: [
+                    { $gte: ['$time', startTime.toDate()] },
+                    { $lte: ['$time', endTime.toDate()] }
+                  ]
+                },
+                then: true,
+                else: false,
+              }
+            }
+          }
+        },
+        {
+          $match: {
+            $or: [
+              { showtimeEnds: true },
+              { showtimeStarts: true },
+              // {
+              //   time: {
+              //     $gte: startTime.toDate(),
+              //     $lte: endTime.toDate(),
+              //   }
+              // }
+            ]
+          }
+        }
+      ];
+      log.mark(pipelines);
+      const badShowtimes = await this.showtimeService.raw().aggregate(pipelines);
+
+      // log.mark('agg', badShowtimes);
+
+      badShowtimes.forEach(bs => {
+        bs.film = film._id;
+      });
+
+      if (badShowtimes.length) {
+        return this.wrapFail({
+          status: 'overlap',
+          showtime,
+          badShowtimes,
+        });
+      }
+    }
+
+    // create showtimes, all good 
+    await this.showtimeService.raw().insertMany(showtimes);
+    return this.wrapSuccess();
   }
 
   @Put('/:id')

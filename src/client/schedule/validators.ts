@@ -17,4 +17,9 @@ export class ShowtimeQueryValidator  {
     message: 'Invalid date',
   })
   from: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsMongoId()
+  cinema: string;
 }
