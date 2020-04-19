@@ -10,6 +10,7 @@ import { HallService } from '~/hall/hall.service';
 import { TIME_BETWEEN_SHOWTIMES } from './constants';
 import moment from 'moment';
 import log from 'color-log';
+import { CinemaService } from '~/cinema/cinema.service';
 
 @Controller('api/v1/showtimes')
 @ApiTags('auth')
@@ -18,6 +19,7 @@ export class ShowtimeController extends BaseController {
     private readonly showtimeService: ShowtimeService,
     @Inject(forwardRef(() => FilmService)) private filmService: FilmService,
     @Inject(forwardRef(() => HallService)) private hallService: HallService,
+    @Inject(forwardRef(() => CinemaService)) private cinemaService: CinemaService,
   ) {
     super();
   }
@@ -86,17 +88,23 @@ export class ShowtimeController extends BaseController {
     @Req() req,
   ) {
     const { showtimes } = body;
-    const { film: filmId, hall: hallId, } = showtimes[0];
+    const { film: filmId, hall: hallId, cinema: cinemaId } = showtimes[0];
     const film = await this.filmService.findById(filmId).lean().exec();
-    const hall = await this.hallService.findById(hallId).lean().exec();
     if (!film) {
       return this.wrapFail({
         status: 'invalid-film'
       });
     }
+    const hall = await this.hallService.findById(hallId).lean().exec();
     if (!hall) {
       return this.wrapFail({
         status: 'invalid-hall'
+      });
+    }
+    const cinema = await this.cinemaService.findById(cinemaId).lean().exec();
+    if (!cinema) {
+      return this.wrapFail({
+        status: 'invalid-cinema'
       });
     }
 
@@ -114,7 +122,10 @@ export class ShowtimeController extends BaseController {
       const endTime = moment(showtime.time).add(film.duration, 'minutes').add(tbs, 'minutes');
       const pipelines = [
         {
-          $match: { hall: hall._id }
+          $match: {
+            hall: hall._id,
+            cinema: cinema._id,
+          },
         },
         {
           $lookup: {
@@ -188,7 +199,7 @@ export class ShowtimeController extends BaseController {
         }
       ];
       log.mark(pipelines);
-      const badShowtimes = await this.showtimeService.raw().aggregate(pipelines);
+      const badShowtimes = await this.showtimeService.raw().aggregate(pipelines).exec();
 
       // log.mark('agg', badShowtimes);
 

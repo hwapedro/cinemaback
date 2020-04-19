@@ -11,12 +11,13 @@ import { ShowtimeQueryValidator, GetShowtimeValidator } from './validators';
 import { FilmService } from '~/film/film.service';
 import { HallService } from '~/hall/hall.service';
 import { HallCellService } from '~/hallCell/hallCell.service';
-import { ObjectId } from '~/types';
+import { ObjectId, OId } from '~/types';
 import { oidToString } from '~/common/scripts/oidToString';
 import { Film } from '~/film/film.model';
 import { Hall } from '~/hall/hall.model';
 import { HallCell } from '~/hallCell/hallCell.model';
 import _ from 'lodash';
+import { mongoose } from '@typegoose/typegoose';
 
 type ShowtimeAggregation = { _id: string, showtimes: Showtime[], films: ObjectId[], halls: ObjectId[] }[];
 
@@ -88,7 +89,7 @@ export class ScheduleController extends BaseController {
       .aggregate([
         {
           $match: {
-            cinema: cinemaId,
+            cinema: OId(cinemaId),
             time: {
               $gte: from.toDate(),
               $lte: from.add(7, 'days').toDate(),
@@ -105,7 +106,7 @@ export class ScheduleController extends BaseController {
         },
       ])
       .exec();
-    // log.mark(showtimesByDate);
+    log.mark(showtimesByDate);
 
     // films
     const filmsRaw = await this.filmService.find({

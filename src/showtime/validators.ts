@@ -15,6 +15,10 @@ class CreateShowtimeValidator {
   @IsNotEmpty()
   @IsMongoId()
   film: string;
+
+  @IsMongoId()
+  @IsNotEmpty()
+  cinema: string;
 }
 
 export class CreateManyShowtimesValidator {
