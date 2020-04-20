@@ -1,10 +1,11 @@
-import { IsString, MaxLength, IsNotEmpty, IsInt, IsIn, Validate, Matches, IsArray, ArrayNotEmpty, ArrayMinSize, ArrayMaxSize, IsOptional, IsNumber } from 'class-validator';
+import { IsString, MaxLength, IsNotEmpty, IsInt, IsIn, Validate, Matches, IsArray, ArrayNotEmpty, ArrayMinSize, ArrayMaxSize, IsOptional, IsNumber, Allow } from 'class-validator';
 
 export class ConditionsValidator {
 
 }
 
 export class QueryValidator {
+  @Allow()
   conditions: any;
 
   @IsInt()
