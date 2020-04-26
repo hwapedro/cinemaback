@@ -21,7 +21,7 @@ export class FilmService {
   }
 
   update(conditions: any, body: any, options?: ModelUpdateOptions) {
-    return FilmModel.update(conditions, body, options);
+    return FilmModel.updateMany(conditions, body, options);
   }
 
   delete(conditions: any) {
@@ -36,7 +36,6 @@ export class FilmService {
     return {
       ...film,
       _id: film._id.toString(),
-      releaseDate: film.releaseDate.getTime(),
       distributionEndDate: film.distributionStartDate.getTime(),
       distributionStartDate: film.distributionStartDate.getTime(),
     };

@@ -38,6 +38,18 @@
 }
 ```
 
+# reports
+```
+query:
+* date from
+* date to 
+в ответе 
+[
+  [ ],
+  [ ]
+]
+```
+
 # Client Routes
 ```
 get / calendar

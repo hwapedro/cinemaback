@@ -84,8 +84,10 @@ export class HallController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    await this.hallService.raw()
-      .findByIdAndDelete(id);
+    const hall = await this.hallService.findById(id).exec();
+    if (hall) {
+      await hall.remove();
+    }
     return this.wrapSuccess();
   }
 }

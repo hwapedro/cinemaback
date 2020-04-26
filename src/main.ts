@@ -38,6 +38,9 @@ async function bootstrap() {
   }));
 
   await app.listen(+process.env.PORT);
+  
+  // generate frontend models
+  // require('./models').generate();
 
   // create test
   if (false) {
@@ -112,7 +115,6 @@ async function bootstrap() {
       duration: 103,
       name: 'HEHE XD',
       genres: [genreId],
-      releaseDate: new Date(),
     });
     const { _id: showtimeId } = await app.get(ShowtimeService).create({
       time: new Date(),

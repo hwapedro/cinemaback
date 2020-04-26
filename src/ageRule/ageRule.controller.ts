@@ -84,8 +84,10 @@ export class AgeRuleController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    await this.ageRuleService.raw()
-      .findByIdAndDelete(id);
+    const ageRule = await this.ageRuleService.findById(id).exec();
+    if (ageRule) {
+      await ageRule.remove();
+    }
     return this.wrapSuccess();
   }
 }

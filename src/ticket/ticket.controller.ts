@@ -90,8 +90,10 @@ export class TicketController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    await this.ticketService.raw()
-      .findByIdAndDelete(id);
+    const ticket = await this.ticketService.findById(id).exec();
+    if (ticket) {
+      await ticket.remove();
+    }
     return this.wrapSuccess();
   }
 }

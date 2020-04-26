@@ -99,8 +99,10 @@ export class CinemaController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    await this.cinemaService.raw()
-      .findByIdAndDelete(id);
+    const cinema = await this.cinemaService.findById(id).exec();
+    if (cinema) {
+      await cinema.remove();
+    }
     return this.wrapSuccess();
   }
 }

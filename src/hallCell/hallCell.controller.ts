@@ -97,8 +97,17 @@ export class HallCellController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    await this.hallCellService.raw()
-      .findByIdAndDelete(id);
+    const hc = await this.hallCellService.findById(id).exec();
+    if (hc) {
+      const deletedIndex = hc.index;
+      await hc.remove();
+      // update others
+      await this.hallCellService.update({
+        index: { $gt: deletedIndex },
+      }, {
+        $inc: { index: -1 }
+      }).exec();
+    }
     return this.wrapSuccess();
   }
 }

@@ -84,8 +84,10 @@ export class ActorController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    await this.actorService.raw()
-      .findByIdAndDelete(id);
+    const actor = await this.actorService.findById(id).exec();
+    if (actor) {
+      await actor.remove();
+    }
     return this.wrapSuccess();
   }
 }

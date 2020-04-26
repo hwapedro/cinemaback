@@ -99,8 +99,10 @@ export class FilmController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    await this.filmService.raw()
-      .findByIdAndDelete(id);
+    const film = await this.filmService.findById(id).exec();
+    if (film) {
+      await film.remove();
+    }
     return this.wrapSuccess();
   }
 }

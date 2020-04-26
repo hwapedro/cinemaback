@@ -91,8 +91,10 @@ export class ShopController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    await this.shopService.raw()
-      .findByIdAndDelete(id);
+    const shop = await this.shopService.findById(id).exec();
+    if (shop) {
+      await shop.remove();
+    }
     return this.wrapSuccess();
   }
 }

@@ -21,7 +21,7 @@ export class NewsService {
   }
 
   update(conditions: any, body: any, options?: ModelUpdateOptions) {
-    return NewsModel.update(conditions, body, options);
+    return NewsModel.updateMany(conditions, body, options);
   }
 
   delete(conditions: any) {

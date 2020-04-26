@@ -24,7 +24,7 @@ export class HallService {
   }
 
   update(conditions: any, body: any, options?: ModelUpdateOptions) {
-    return HallModel.update(conditions, body, options);
+    return HallModel.updateMany(conditions, body, options);
   }
 
   delete(conditions: any) {

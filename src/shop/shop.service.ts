@@ -26,7 +26,7 @@ export class ShopService {
   }
 
   update(conditions: any, body: any, options?: ModelUpdateOptions) {
-    return ShopModel.update(conditions, body, options);
+    return ShopModel.updateMany(conditions, body, options);
   }
 
   delete(conditions: any) {

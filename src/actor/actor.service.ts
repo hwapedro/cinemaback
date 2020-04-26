@@ -21,7 +21,7 @@ export class ActorService {
   }
 
   update(conditions: any, body: any, options?: ModelUpdateOptions) {
-    return ActorModel.update(conditions, body, options);
+    return ActorModel.updateMany(conditions, body, options);
   }
 
   delete(conditions: any) {

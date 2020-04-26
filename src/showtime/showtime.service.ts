@@ -21,7 +21,7 @@ export class ShowtimeService {
   }
 
   update(conditions: any, body: any, options?: ModelUpdateOptions) {
-    return ShowtimeModel.update(conditions, body, options);
+    return ShowtimeModel.updateMany(conditions, body, options);
   }
 
   delete(conditions: any) {

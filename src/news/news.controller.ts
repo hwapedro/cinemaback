@@ -91,9 +91,10 @@ export class NewsController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    await this.newsService.raw()
-      .findByIdAndDelete(id);
-    return this.wrapSuccess();
+    const news = await this.newsService.findById(id).exec();
+    if (news) {
+      await news.remove();
+    }
   }
 }
 

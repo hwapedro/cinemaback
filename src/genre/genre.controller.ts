@@ -84,8 +84,10 @@ export class GenreController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    await this.genreService.raw()
-      .findByIdAndDelete(id);
+    const genre = await this.genreService.findById(id).exec();
+    if (genre) {
+      await genre.remove();
+    }
     return this.wrapSuccess();
   }
 }

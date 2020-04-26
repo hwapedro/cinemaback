@@ -21,7 +21,7 @@ export class TicketService {
   }
 
   update(conditions: any, body: any, options?: ModelUpdateOptions) {
-    return TicketModel.update(conditions, body, options);
+    return TicketModel.updateMany(conditions, body, options);
   }
 
   delete(conditions: any) {

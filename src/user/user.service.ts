@@ -21,7 +21,7 @@ export class UserService {
   }
 
   update(conditions: any, doc: any, options?: ModelUpdateOptions) {
-    return UserModel.update(conditions, doc, options);
+    return UserModel.updateMany(conditions, doc, options);
   }
 
   delete(conditions: any) {

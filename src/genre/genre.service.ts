@@ -21,7 +21,7 @@ export class GenreService {
   }
 
   update(conditions: any, body: any, options?: ModelUpdateOptions) {
-    return GenreModel.update(conditions, body, options);
+    return GenreModel.updateMany(conditions, body, options);
   }
 
   delete(conditions: any) {

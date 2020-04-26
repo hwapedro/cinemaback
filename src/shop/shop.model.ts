@@ -2,6 +2,7 @@ import { prop, arrayProp, getModelForClass, Ref } from '@typegoose/typegoose';
 import { ShopItem } from '~/shopItem/shopItem.model';
 import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 import { BaseMongooseModel } from '~/common/BaseModel';
+import { Cinema } from '~/cinema/cinema.model';
 
 /*
 Наименование	Описание	Товары
@@ -16,6 +17,9 @@ export class Shop extends BaseMongooseModel {
 
   @arrayProp({ ref: 'ShopItem' })
   items: Ref<ShopItem>[];
+
+  @prop({ ref: 'Cinema' })
+  cinema: Ref<Cinema>;
 }
 
 export const ShopModel = getModelForClass(Shop, {

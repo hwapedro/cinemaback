@@ -245,8 +245,10 @@ export class ShowtimeController extends BaseController {
     @Param('id') id: string,
     @Req() req,
   ) {
-    await this.showtimeService.raw()
-      .findByIdAndDelete(id);
+    const showtime = await this.showtimeService.findById(id).exec();
+    if (showtime) {
+      await showtime.remove();
+    }
     return this.wrapSuccess();
   }
 }

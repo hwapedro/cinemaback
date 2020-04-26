@@ -21,7 +21,7 @@ export class __uppercaseName__Service {
   }
 
   update(conditions: any, body: any, options?: ModelUpdateOptions) {
-    return __uppercaseName__Model.update(conditions, body, options);
+    return __uppercaseName__Model.updateMany(conditions, body, options);
   }
 
   delete(conditions: any) {

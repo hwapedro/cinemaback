@@ -21,7 +21,7 @@ export class ImagesService {
   }
 
   update(conditions: any, body: any, options?: ModelUpdateOptions) {
-    return ImageModel.update(conditions, body, options);
+    return ImageModel.updateMany(conditions, body, options);
   }
 
   delete(conditions: any) {

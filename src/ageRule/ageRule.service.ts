@@ -21,7 +21,7 @@ export class AgeRuleService {
   }
 
   update(conditions: any, body: any, options?: ModelUpdateOptions) {
-    return AgeRuleModel.update(conditions, body, options);
+    return AgeRuleModel.updateMany(conditions, body, options);
   }
 
   delete(conditions: any) {

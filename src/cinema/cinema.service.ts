@@ -21,7 +21,7 @@ export class CinemaService {
   }
 
   update(conditions: any, body: any, options?: ModelUpdateOptions) {
-    return CinemaModel.update(conditions, body, options);
+    return CinemaModel.updateMany(conditions, body, options);
   }
 
   delete(conditions: any) {

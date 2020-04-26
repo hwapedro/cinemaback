@@ -21,7 +21,7 @@ export class CommentService {
   }
 
   update(conditions: any, body: any, options?: ModelUpdateOptions) {
-    return CommentModel.update(conditions, body, options);
+    return CommentModel.updateMany(conditions, body, options);
   }
 
   delete(conditions: any) {
