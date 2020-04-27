@@ -120,14 +120,17 @@ export class ScheduleController extends BaseController {
     // shwtimes
     const showtimesList = showtimesByDate.map(entry => {
       // group for each film
-      const showtimes: { [key: string]: any[] } = {};
+      const showtimes: { [key: string]: { [hallId: string]: any[] } } = {};
       entry.showtimes.forEach(showtime => {
         const filmId: string = (showtime.film as any)._id.toString();
-        showtimes[filmId] = showtimes[filmId] || [];
-        showtimes[filmId].push({
+        const hallId =  oidToString(showtime.hall);
+        showtimes[filmId] = showtimes[filmId] || {};
+        showtimes[filmId][hallId] = showtimes[filmId][hallId] || []; 
+        // group by hall id
+        showtimes[filmId][hallId].push({
           _id: oidToString(showtime._id),
           time: showtime.time.getTime(),
-          hall: oidToString(showtime.hall),
+          hall: hallId,
           taken: showtime.taken || [],
         });
       })

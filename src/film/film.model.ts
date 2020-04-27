@@ -60,6 +60,9 @@ export class Film extends BaseMongooseModel {
 
   @arrayProp({ ref: 'Genre' })
   genres: Ref<Genre>[];
+
+  @prop()
+  image: string;
 }
 
 export const FilmModel = getModelForClass(Film, {
