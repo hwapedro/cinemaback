@@ -18,6 +18,9 @@ import { Hall } from '~/hall/hall.model';
 import { HallCell } from '~/hallCell/hallCell.model';
 import _ from 'lodash';
 import { mongoose } from '@typegoose/typegoose';
+import { GenreService } from '~/genre/genre.service';
+import { AgeRuleService } from '~/ageRule/ageRule.service';
+import { Genre } from '~/genre/genre.model';
 
 type ShowtimeAggregation = { _id: string, showtimes: Showtime[], films: ObjectId[], halls: ObjectId[] }[];
 
@@ -30,6 +33,8 @@ export class ScheduleController extends BaseController {
     @Inject(forwardRef(() => FilmService)) private filmService: FilmService,
     @Inject(forwardRef(() => HallService)) private hallService: HallService,
     @Inject(forwardRef(() => HallCellService)) private hallCellService: HallCellService,
+    @Inject(forwardRef(() => GenreService)) private genreService: GenreService,
+    @Inject(forwardRef(() => AgeRuleService)) private ageRuleService: AgeRuleService,
   ) {
     super();
   }
@@ -117,29 +122,6 @@ export class ScheduleController extends BaseController {
       this.filmService.wrap(film),
     ]));
 
-    // shwtimes
-    const showtimesList = showtimesByDate.map(entry => {
-      // group for each film
-      const showtimes: { [key: string]: { [hallId: string]: any[] } } = {};
-      entry.showtimes.forEach(showtime => {
-        const filmId: string = (showtime.film as any)._id.toString();
-        const hallId =  oidToString(showtime.hall);
-        showtimes[filmId] = showtimes[filmId] || {};
-        showtimes[filmId][hallId] = showtimes[filmId][hallId] || []; 
-        // group by hall id
-        showtimes[filmId][hallId].push({
-          _id: oidToString(showtime._id),
-          time: showtime.time.getTime(),
-          hall: hallId,
-          taken: showtime.taken || [],
-        });
-      })
-      return {
-        date: entry._id,
-        showtimes,
-      };
-    });
-
     const cellIndices: Set<number> = new Set();
     // halls
     const hallsRaw = await this.hallService.find({
@@ -157,12 +139,38 @@ export class ScheduleController extends BaseController {
 
     // hall cells
     const hallCellsRaw = await this.hallCellService.find({
-      index: { $in: Array.from(cellIndices) }
+      // index: { $in: Array.from(cellIndices) }
     }).lean<HallCell>().exec();
     const hallCells = Object.fromEntries(hallCellsRaw.map(hallCell => [
       hallCell.index,
       _.omit(hallCell, '_id'),
     ]));
+
+    // shwtimes
+    const showtimesList = showtimesByDate.map(entry => {
+      // group for each film
+      const showtimes: { [filmId: string]: { [hallId: string]: any[] } } = {};
+      entry.showtimes.forEach(showtime => {
+        const filmId: string = (showtime.film as any)._id.toString();
+        const hallId = oidToString(showtime.hall);
+        showtimes[filmId] = showtimes[filmId] || {};
+        showtimes[filmId][hallId] = showtimes[filmId][hallId] || [];
+        // group by hall id
+        const priceRange = this.scheduleService.priceRange(halls[hallId], hallCellsRaw);
+        showtimes[filmId][hallId].push({
+          _id: oidToString(showtime._id),
+          time: showtime.time.getTime(),
+          hall: hallId,
+          taken: showtime.taken || [],
+          min: priceRange.min,
+          max: priceRange.max,
+        });
+      })
+      return {
+        date: entry._id,
+        showtimes,
+      };
+    });
 
     return this.wrapSuccess({
       showtimes: showtimesList,

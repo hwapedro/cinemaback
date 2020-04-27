@@ -6,6 +6,8 @@ import { HallCellModule } from '~/hallCell/hallCell.module';
 import { ClientGeneralController } from './general.controller';
 import { CinemaModule } from '~/cinema/cinema.module';
 import { ShopModule } from '~/shop/shop.module';
+import { GenreModule } from '~/genre/genre.module';
+import { AgeRuleModule } from '~/ageRule/ageRule.module';
 
 @Module({
   imports: [
@@ -15,7 +17,9 @@ import { ShopModule } from '~/shop/shop.module';
     forwardRef(() => CinemaModule),
     forwardRef(() => HallCellModule),
     forwardRef(() => ShopModule),
-  ],
+    forwardRef(() => GenreModule),
+    forwardRef(() => AgeRuleModule),
+ ],
   controllers: [
     ClientGeneralController
   ],

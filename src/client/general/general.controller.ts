@@ -7,6 +7,10 @@ import { HallCellModel } from '~/hallCell/hallCell.model';
 import { ShopModel } from '~/shop/shop.model';
 import { HallService } from '~/hall/hall.service';
 import { HallCellService } from '~/hallCell/hallCell.service';
+import { GenreService } from '~/genre/genre.service';
+import { AgeRuleService } from '~/ageRule/ageRule.service';
+import { oidToString } from '~/common/scripts/oidToString';
+import { Genre } from '~/genre/genre.model';
 
 @Controller('/client/api/v1/general')
 export class ClientGeneralController extends BaseController {
@@ -15,6 +19,8 @@ export class ClientGeneralController extends BaseController {
     @Inject(forwardRef(() => HallService)) private hallService: HallService,
     @Inject(forwardRef(() => HallCellService)) private hallCellService: HallCellService,
     @Inject(forwardRef(() => CinemaService)) private shopService: CinemaService,
+    @Inject(forwardRef(() => GenreService)) private genreService: GenreService,
+    @Inject(forwardRef(() => AgeRuleService)) private ageRuleService: AgeRuleService,
   ) {
     super();
   }
@@ -35,11 +41,15 @@ export class ClientGeneralController extends BaseController {
     const shops = await this.shopService.find({})
       .lean()
       .exec();
+    const genres = await this.genreService.find({}).lean().exec();
+    const ageRules = await this.ageRuleService.find({}).lean().exec();
     return this.wrapSuccess({
       cinemas,
       halls,
       hallCells,
-      shops
+      shops,
+      genres,
+      ageRules,
     });
   }
 }
