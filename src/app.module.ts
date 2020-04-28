@@ -17,6 +17,7 @@ import { ImagesModule } from './images/images.module';
 import { HallCellModule } from './hallCell/hallCell.module';
 import { ClientModule } from './client/client.module';
 import { TestModule } from './test/test.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { TestModule } from './test/test.module';
     ShowtimeModule,
     ImagesModule,
     HallCellModule,
+    ReportsModule,
     ...(process.env.LOCAL ? [TestModule] : []),
     // main client API module
     ClientModule,
