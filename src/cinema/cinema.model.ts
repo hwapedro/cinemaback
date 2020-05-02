@@ -26,7 +26,7 @@ export class Cinema extends BaseMongooseModel {
   @arrayProp({ ref: 'Film' })
   films: Ref<Film>[];
 
-  @arrayProp({ items: Showtime })
+  @arrayProp({ ref: 'Showtime' })
   showtimes: Showtime[];
 }
 

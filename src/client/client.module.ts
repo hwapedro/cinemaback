@@ -3,6 +3,7 @@ import { ScheduleModule } from './schedule/schedule.module';
 import { PaymentModule } from './payment/payment.module';
 import { ClientCinemaModule } from './cinema/cinema.module';
 import { ClientGeneralModule } from './general/general.module';
+import { SoonModule } from './soon/soon.module';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { ClientGeneralModule } from './general/general.module';
     PaymentModule,
     ClientCinemaModule,
     ClientGeneralModule,
+    SoonModule,
   ],
   controllers: [
   ],
