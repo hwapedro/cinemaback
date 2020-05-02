@@ -56,7 +56,12 @@ export class ShowtimeController extends BaseController {
     if (query.skip) {
       findQuery = findQuery.skip(query.skip);
     }
-    const count = await this.showtimeService.find(query.conditions).countDocuments().exec();
+    const count = await this.showtimeService.find(query.conditions)
+      .sort({
+        time: -1
+      })
+      .countDocuments()
+      .exec();
     const showtimes = await findQuery.exec();
     return this.wrapSuccess({
       showtimes,
@@ -196,7 +201,7 @@ export class ShowtimeController extends BaseController {
 
     if (badShowtimes.length) {
       throw new BadRequestException('Time overlap found, please select another time. Bad showtimes: '
-      + badShowtimes.map(bs => bs.time).join(', '));
+        + badShowtimes.map(bs => bs.time).join(', '));
       return this.wrapFail({
         status: 'overlap',
         showtime,
