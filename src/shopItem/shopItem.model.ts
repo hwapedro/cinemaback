@@ -29,6 +29,9 @@ export class ShopItem extends BaseMongooseModel {
 
   @prop()
   inStock: boolean;
+
+  @prop()
+  image: string;
 }
 
 export const ShopItemModel = getModelForClass(ShopItem, {

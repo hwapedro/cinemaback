@@ -19,6 +19,7 @@ import { TicketService } from './ticket/ticket.service';
 import moment from 'moment';
 import { ObjectId } from './types';
 import log from 'color-log';
+import { AuthService } from './auth/auth.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -42,6 +43,8 @@ async function bootstrap() {
   // generate frontend models
   // require('./models').generate();
 
+  // generate default admin user
+  await app.get(AuthService).createDefaultUser();
   // create test
   if (false) {
     const ss = app.get(ShowtimeService);
