@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Req, Res, UseGuards, Post, Body, Put, Delete, Inject, forwardRef } from '@nestjs/common';
+import { Controller, Get, Param, Req, Res, UseGuards, Post, Body, Put, Delete, Inject, forwardRef, BadRequestException } from '@nestjs/common';
 import { ShowtimeService } from './showtime.service';
 import BaseController from '../common/BaseController';
 import { AuthGuard } from '@nestjs/passport';
@@ -75,18 +75,21 @@ export class ShowtimeController extends BaseController {
     const { film: filmId, hall: hallId, cinema: cinemaId } = showtime;
     const film = await this.filmService.findById(filmId).lean().exec();
     if (!film) {
+      throw new BadRequestException('Film not found');
       return this.wrapFail({
         status: 'invalid-film'
       });
     }
     const hall = await this.hallService.findById(hallId).lean().exec();
     if (!hall) {
+      throw new BadRequestException('Hall not found');
       return this.wrapFail({
         status: 'invalid-hall'
       });
     }
     const cinema = await this.cinemaService.findById(cinemaId).lean().exec();
     if (!cinema) {
+      throw new BadRequestException('Cinema not found');
       return this.wrapFail({
         status: 'invalid-cinema'
       });
@@ -101,103 +104,105 @@ export class ShowtimeController extends BaseController {
       hall: 1,
       time: 1
     };
-    
-      const startTime = moment(showtime.time).subtract(tbs, 'minutes');
-      const endTime = moment(showtime.time).add(film.duration, 'minutes').add(tbs, 'minutes');
-      const pipelines = [
-        {
-          $match: {
-            hall: hall._id,
-            cinema: cinema._id,
+
+    const startTime = moment(showtime.time).subtract(tbs, 'minutes');
+    const endTime = moment(showtime.time).add(film.duration, 'minutes').add(tbs, 'minutes');
+    const pipelines = [
+      {
+        $match: {
+          hall: hall._id,
+          cinema: cinema._id,
+        },
+      },
+      {
+        $lookup: {
+          from: 'films',
+          localField: 'film',
+          foreignField: '_id',
+          as: 'film'
+        }
+      },
+      {
+        $unwind: {
+          path: '$film',
+        }
+      },
+      {
+        $project: {
+          showtimeEndTime: {
+            $add: ['$time', {
+              $multiply: [
+                '$film.duration',
+                1000 * 60
+              ]
+            }]
           },
-        },
-        {
-          $lookup: {
-            from: 'films',
-            localField: 'film',
-            foreignField: '_id',
-            as: 'film'
-          }
-        },
-        {
-          $unwind: {
-            path: '$film',
-          }
-        },
-        {
-          $project: {
-            showtimeEndTime: {
-              $add: ['$time', {
-                $multiply: [
-                  '$film.duration',
-                  1000 * 60
+          ...projectInfo
+        }
+      },
+      {
+        $project: {
+          ...projectInfo,
+          showtimeEndTime: 1,
+          showtimeEnds: {
+            $cond: {
+              if: {
+                $and: [
+                  { $gt: ['$showtimeEndTime', startTime.toDate()] },
+                  { $lt: ['$showtimeEndTime', endTime.toDate()] }
                 ]
-              }]
-            },
-            ...projectInfo
-          }
-        },
-        {
-          $project: {
-            ...projectInfo,
-            showtimeEndTime: 1,
-            showtimeEnds: {
-              $cond: {
-                if: {
-                  $and: [
-                    { $gt: ['$showtimeEndTime', startTime.toDate()] },
-                    { $lt: ['$showtimeEndTime', endTime.toDate()] }
-                  ]
-                },
-                then: true,
-                else: false,
-              }
-            },
-            showtimeStarts: {
-              $cond: {
-                if: {
-                  $and: [
-                    { $gte: ['$time', startTime.toDate()] },
-                    { $lte: ['$time', endTime.toDate()] }
-                  ]
-                },
-                then: true,
-                else: false,
-              }
+              },
+              then: true,
+              else: false,
+            }
+          },
+          showtimeStarts: {
+            $cond: {
+              if: {
+                $and: [
+                  { $gte: ['$time', startTime.toDate()] },
+                  { $lte: ['$time', endTime.toDate()] }
+                ]
+              },
+              then: true,
+              else: false,
             }
           }
-        },
-        {
-          $match: {
-            $or: [
-              { showtimeEnds: true },
-              { showtimeStarts: true },
-              // {
-              //   time: {
-              //     $gte: startTime.toDate(),
-              //     $lte: endTime.toDate(),
-              //   }
-              // }
-            ]
-          }
         }
-      ];
-      log.mark(pipelines);
-      const badShowtimes = await this.showtimeService.raw().aggregate(pipelines).exec();
-
-      // log.mark('agg', badShowtimes);
-
-      badShowtimes.forEach(bs => {
-        bs.film = film._id;
-      });
-
-      if (badShowtimes.length) {
-        return this.wrapFail({
-          status: 'overlap',
-          showtime,
-          badShowtimes,
-        });
+      },
+      {
+        $match: {
+          $or: [
+            { showtimeEnds: true },
+            { showtimeStarts: true },
+            // {
+            //   time: {
+            //     $gte: startTime.toDate(),
+            //     $lte: endTime.toDate(),
+            //   }
+            // }
+          ]
+        }
       }
+    ];
+    log.mark(pipelines);
+    const badShowtimes = await this.showtimeService.raw().aggregate(pipelines).exec();
+
+    // log.mark('agg', badShowtimes);
+
+    badShowtimes.forEach(bs => {
+      bs.film = film._id;
+    });
+
+    if (badShowtimes.length) {
+      throw new BadRequestException('Time overlap found, please select another time. Bad showtimes: '
+      + badShowtimes.map(bs => bs.time).join(', '));
+      return this.wrapFail({
+        status: 'overlap',
+        showtime,
+        badShowtimes,
+      });
+    }
 
     // create showtime, all good 
     const showtimeEntity = await this.showtimeService.create(body);
@@ -216,7 +221,7 @@ export class ShowtimeController extends BaseController {
     @Body() body: CreateManyShowtimesValidator,
     @Req() req,
   ) {
-    
+
   }
 
   @Put('/:id')

@@ -42,9 +42,12 @@ export class UserController extends BaseController {
     if (query.skip) {
       findQuery = findQuery.skip(query.skip);
     }
+    const count = await this.userService.find(query.conditions).countDocuments().exec();
     const users = await findQuery.exec();
     return this.wrapSuccess({
       users: users.map(this.userService.hidePassword),
+      hasMore: ((query.skip || 0) + (query.limit || 1)) < count,
+      total: count,
     });
   }
 

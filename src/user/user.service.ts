@@ -30,10 +30,8 @@ export class UserService {
   }
 
   hidePassword(user: User) {
-    return {
-      ...user,
-      password: '******',
-    };
+    user.password = '******';
+    return user;
   }
 
   async hashPassword(password: string, salt?: string): Promise<{ hashedPassword: string, salt: string }> {
