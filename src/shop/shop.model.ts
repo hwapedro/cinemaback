@@ -16,7 +16,7 @@ export class Shop extends BaseMongooseModel {
   description: string;
 
   @arrayProp({ ref: 'ShopItem' })
-  items: Ref<ShopItem>[];
+  shopItems: Ref<ShopItem>[];
 
   @prop({ ref: 'Cinema' })
   cinema: Ref<Cinema>;

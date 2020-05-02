@@ -12,7 +12,7 @@ import { oidToString } from '~/common/scripts/oidToString';
   try {
     const shopItemId = oidToString(this._id);
     await ShopModel.updateMany({}, {
-      $pullAll: { items: [shopItemId] }
+      $pullAll: { shopItems: [shopItemId] }
     }).exec();
     next();
   } catch (error) {

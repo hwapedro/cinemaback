@@ -124,7 +124,7 @@ async function bootstrap() {
     const { _id: shopId } = await app.get(ShopService).create({
       name: 'Havka',
       description: 'Best shop',
-      items: [itemId]
+      shopItems: [itemId]
     });
     const { _id: cinemaId } = await app.get(CinemaService).create({
       name: 'Cinema',
