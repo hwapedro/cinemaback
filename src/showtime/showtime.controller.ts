@@ -47,11 +47,11 @@ export class ShowtimeController extends BaseController {
     @Req() req,
   ) {
     let findQuery = this.showtimeService.find(query.conditions)
-      .populate('film')
-      .populate('hall')
       .sort({
         time: -1
       })
+      .populate('film')
+      .populate('hall')
       .lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);

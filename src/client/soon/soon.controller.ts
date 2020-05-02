@@ -118,6 +118,12 @@ export class SoonController extends BaseController {
       },
       ...LOOKUP_FIELDS,
       // ...PROJECT_FIELDS_ARR_TO_OBJ,
+      // sort
+      {
+        $sort: {
+          'films.distributionStartDate': -1,
+        }
+      }
     ]);
 
     log.mark(filmsByMonth);

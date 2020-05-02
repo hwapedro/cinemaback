@@ -42,7 +42,7 @@ export class AuthController extends BaseController {
 
     // validate password
     const { hashedPassword } = await this.userService.hashPassword(password, user.salt);
-    if (hashedPassword === user.password) {
+    if (hashedPassword !== user.password) {
       throw new UnauthorizedException({
         ...this.wrapError(ERROR_STRING),
       });
