@@ -34,6 +34,9 @@ export class Hall extends BaseMongooseModel {
 
   @arrayProp({ _id: false, type: mongoose.Schema.Types.Mixed, dim: 2 })
   structure: number[][];
+
+  @prop()
+  color: string;
 }
 
 export const HallModel = getModelForClass(Hall, {

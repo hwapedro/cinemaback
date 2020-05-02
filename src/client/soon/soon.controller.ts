@@ -24,7 +24,7 @@ import { AgeRule } from '~/ageRule/ageRule.model';
 import { Actor } from '~/actor/actor.model';
 
 
-type SoonAggregation = { _id: string, films: Film[], ageRules: ModelMap<AgeRule>, actors: ModelMap<Actor>, genres: ModelMap<Genre> };
+type SoonAggregation = { _id: string, films: Film[], ageRules: AgeRule[], actors: Actor[], genres: Genre[] };
 
 const MULTISELECT_FIELDS = ['ageRules', 'genres', 'actors'];
 const LOOKUP_FIELDS = MULTISELECT_FIELDS.map(field => ({
@@ -36,17 +36,6 @@ const LOOKUP_FIELDS = MULTISELECT_FIELDS.map(field => ({
   }
 }));
 const PROJECT_FIELDS_ARR_TO_OBJ = [
-  {
-    $project: {
-      ...MULTISELECT_FIELDS.map(field => ({
-        [field]: {
-          _id: {
-            $toString: "$_id"
-          }
-        }
-      }))
-    }
-  },
   {
     $project: {
       ...MULTISELECT_FIELDS.map(field => ({
@@ -128,17 +117,30 @@ export class SoonController extends BaseController {
         }
       },
       ...LOOKUP_FIELDS,
-      ...PROJECT_FIELDS_ARR_TO_OBJ,
+      // ...PROJECT_FIELDS_ARR_TO_OBJ,
     ]);
 
     log.mark(filmsByMonth);
 
-    // create map
+    
 
     // transfrom array to map
     const soonTable: any = {};
 
     for (const month of filmsByMonth) {
+      // create maps instead of arrays
+      month.ageRules = Object.fromEntries(month.ageRules.map(ageRule => [
+        oidToString(ageRule._id),
+        ageRule
+      ]));
+      month.genres = Object.fromEntries(month.genres.map(genre => [
+        oidToString(genre._id),
+        genre
+      ]));
+      month.actors = Object.fromEntries(month.actors.map(actor => [
+        oidToString(actor._id),
+        actor
+      ]));
       for (const film of month.films) {
         film.genres = film.genres.map(genre => month.genres[genre as any]);
         film.ageRule = month.ageRules[film.ageRule as any];
