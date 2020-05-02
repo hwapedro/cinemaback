@@ -49,6 +49,9 @@ export class ShowtimeController extends BaseController {
     let findQuery = this.showtimeService.find(query.conditions)
       .populate('film')
       .populate('hall')
+      .sort({
+        time: -1
+      })
       .lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);
@@ -57,9 +60,6 @@ export class ShowtimeController extends BaseController {
       findQuery = findQuery.skip(query.skip);
     }
     const count = await this.showtimeService.find(query.conditions)
-      .sort({
-        time: -1
-      })
       .countDocuments()
       .exec();
     const showtimes = await findQuery.exec();
