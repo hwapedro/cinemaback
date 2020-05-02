@@ -10,6 +10,9 @@ export class User {
 
   @prop()
   password: string;
+
+  @prop()
+  salt: string;
 }
 
 export const UserModel = getModelForClass(User, {

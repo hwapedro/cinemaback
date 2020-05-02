@@ -71,24 +71,8 @@ export class ShowtimeController extends BaseController {
     @Body() body,
     @Req() req,
   ) {
-    const showtime = await this.showtimeService.create(body);
-    await showtime
-      .populate('film')
-      .populate('hall')
-      .execPopulate();
-    return this.wrapSuccess({
-      showtime
-    });
-  }
-
-  @Post('/many')
-  @UseGuards(AuthGuard('jwt'))
-  async createMany(
-    @Body() body: CreateManyShowtimesValidator,
-    @Req() req,
-  ) {
-    const { showtimes } = body;
-    const { film: filmId, hall: hallId, cinema: cinemaId } = showtimes[0];
+    const showtime = body;
+    const { film: filmId, hall: hallId, cinema: cinemaId } = showtime;
     const film = await this.filmService.findById(filmId).lean().exec();
     if (!film) {
       return this.wrapFail({
@@ -117,7 +101,7 @@ export class ShowtimeController extends BaseController {
       hall: 1,
       time: 1
     };
-    for (const showtime of showtimes) {
+    
       const startTime = moment(showtime.time).subtract(tbs, 'minutes');
       const endTime = moment(showtime.time).add(film.duration, 'minutes').add(tbs, 'minutes');
       const pipelines = [
@@ -214,11 +198,25 @@ export class ShowtimeController extends BaseController {
           badShowtimes,
         });
       }
-    }
 
-    // create showtimes, all good 
-    await this.showtimeService.raw().insertMany(showtimes);
-    return this.wrapSuccess();
+    // create showtime, all good 
+    const showtimeEntity = await this.showtimeService.create(body);
+    await showtimeEntity
+      .populate('film')
+      .populate('hall')
+      .execPopulate();
+    return this.wrapSuccess({
+      showtime: showtimeEntity
+    });
+  }
+
+  @Post('/many')
+  @UseGuards(AuthGuard('jwt'))
+  async createMany(
+    @Body() body: CreateManyShowtimesValidator,
+    @Req() req,
+  ) {
+    
   }
 
   @Put('/:id')

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Req, Res, UseGuards, Body, Post, HttpCode, HttpStatus, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Param, Req, Res, UseGuards, Body, Post, HttpCode, HttpStatus, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   ApiExtraModels,
@@ -13,7 +13,9 @@ import BaseController from '../common/BaseController';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from './swagger'
 import { UserService } from '~/user/user.service';
+import crypto from 'crypto';
 
+const ERROR_STRING = 'Invalid email or password';
 
 @Controller('api/v1/auth')
 @ApiTags('auth')
@@ -29,12 +31,20 @@ export class AuthController extends BaseController {
   @Post('/login')
   @HttpCode(200)
   async login(@Body() body: any) {
-    const { email, password } = body
-    const user = (await this.userService.find({ email, password }).lean().exec())[0]
+    const { email, password } = body;
+    const user = (await this.userService.find({ email }).lean().exec())[0];
 
     if (!user) {
       throw new BadRequestException({
-        ...this.wrapError('no user'),
+        ...this.wrapError(ERROR_STRING),
+      });
+    }
+
+    // validate password
+    const { hashedPassword } = await this.userService.hashPassword(password, user.salt);
+    if (hashedPassword === user.password) {
+      throw new UnauthorizedException({
+        ...this.wrapError(ERROR_STRING),
       });
     }
 

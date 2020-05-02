@@ -44,7 +44,7 @@ export class UserController extends BaseController {
     }
     const users = await findQuery.exec();
     return this.wrapSuccess({
-      users,
+      users: users.map(this.userService.hidePassword),
     });
   }
 
@@ -54,9 +54,18 @@ export class UserController extends BaseController {
     @Body() body,
     @Req() req,
   ) {
-    const user = await this.userService.create(body);
+    const { password } = body;
+
+    const { hashedPassword, salt } = await this.userService.hashPassword(password);
+
+    let user = await this.userService.create({
+      ...body,
+      passwod: hashedPassword,
+      salt,
+    });
+
     return this.wrapSuccess({
-      user
+      user: this.userService.hidePassword(user),
     });
   }
 
@@ -67,12 +76,26 @@ export class UserController extends BaseController {
     @Body() body,
     @Req() req,
   ) {
+    let passwordUpdateBody: any = {};
+    if (body.password) {
+      // update password
+      const { hashedPassword, salt } = await this.userService.hashPassword(body.password);
+      passwordUpdateBody = {
+        password: hashedPassword,
+        salt,
+      };
+    }
+
     const updated = await this.userService.raw()
-      .findByIdAndUpdate(id, body, { new: true })
+      .findByIdAndUpdate(id, {
+        ...body,
+        ...passwordUpdateBody,
+      }, { new: true })
       .lean()
       .exec();
+
     return this.wrapSuccess({
-      user: updated,
+      user: this.userService.hidePassword(updated),
     });
   }
 
