@@ -18,6 +18,8 @@ import { HallCellModule } from './hallCell/hallCell.module';
 import { ClientModule } from './client/client.module';
 import { TestModule } from './test/test.module';
 import { ReportsModule } from './reports/reports.module';
+import path from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -41,6 +43,11 @@ import { ReportsModule } from './reports/reports.module';
     ...(process.env.LOCAL ? [TestModule] : []),
     // main client API module
     ClientModule,
+
+    ServeStaticModule.forRoot({
+      serveRoot: '/admin',
+      rootPath: path.join(__dirname, '..', 'admin-build')
+    })
   ],
   controllers: [],
   providers: [],
