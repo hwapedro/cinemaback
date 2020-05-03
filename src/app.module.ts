@@ -20,6 +20,7 @@ import { TestModule } from './test/test.module';
 import { ReportsModule } from './reports/reports.module';
 import path from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ROOT } from './config';
 
 @Module({
   imports: [
@@ -46,7 +47,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 
     ServeStaticModule.forRoot({
       serveRoot: '/admin',
-      rootPath: path.join(__dirname, '..', 'admin-build')
+      rootPath: path.join(ROOT, 'admin-build')
     })
   ],
   controllers: [],
