@@ -19,7 +19,7 @@ export class ReportsController extends BaseController {
     super();
   }
 
-  @Post('/generate')
+  @Post('/query')
   @UseGuards(AuthGuard('jwt'))
   async getReport(
     @Body() body: ReportGenerateValidator,

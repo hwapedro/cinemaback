@@ -120,6 +120,7 @@ export class PaymentController extends BaseController {
         cell,
       };
     });
+    log.mark(approvedSeats, hallCells, hall);
     const priceSeats = approvedSeats.reduce((acc, curr) => acc + hallCells[hall.structure[curr.row][curr.cell]].price, 0);
     const priceShopItems = (statusOrBoguth as BoughtItem[]).reduce((acc, curr) => acc + curr.price, 0);
     const totalPrice = priceSeats + priceShopItems;
