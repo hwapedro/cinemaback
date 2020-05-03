@@ -28,6 +28,13 @@ export class NewsService {
     return NewsModel.deleteMany(conditions);
   }
 
+  getClientNews(take: number, skip: number) {
+    const query = NewsModel.find({})
+      .sort({ date: -1 })
+      .skip(skip)
+      .limit(take);
+  }
+
   raw() {
     return NewsModel;
   }

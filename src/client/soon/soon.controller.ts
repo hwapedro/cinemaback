@@ -24,7 +24,7 @@ import { AgeRule } from '~/ageRule/ageRule.model';
 import { Actor } from '~/actor/actor.model';
 
 
-type SoonAggregation = { _id: string, films: Film[], ageRules: AgeRule[], actors: Actor[], genres: Genre[] };
+type SoonAggregation = { _id: string, monthDate: any, films: Film[], ageRules: AgeRule[], actors: Actor[], genres: Genre[] };
 
 const MULTISELECT_FIELDS = ['ageRules', 'genres', 'actors'];
 const LOOKUP_FIELDS = MULTISELECT_FIELDS.map(field => ({
@@ -128,10 +128,10 @@ export class SoonController extends BaseController {
 
     log.mark(filmsByMonth);
 
-    
 
     // transfrom array to map
     const soonTable: any = {};
+    const sortedMonths = [];
 
     for (const month of filmsByMonth) {
       // create maps instead of arrays

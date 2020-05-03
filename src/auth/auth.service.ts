@@ -25,10 +25,12 @@ export class AuthService {
   public async createDefaultUser() {
     const usersCount = await this.userSerivce.find({}).count().exec();
     if (!usersCount) {
+      const { hashedPassword, salt } = await this.userSerivce.hashPassword('tusuronelove');
       await this.userSerivce.create({
         email: 'admin@default.com',
         name: 'Default Administrator',
-        password: 'tusuronelove'
+        password: hashedPassword,
+        salt,
       });
     }
   }

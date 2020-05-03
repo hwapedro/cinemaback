@@ -24,7 +24,9 @@ export class FileStorageService {
       stream,
       writeStream,
     );
-
+    await file.setMetadata({
+      cacheControl: 'public, max-age=86400'
+    });
     // await file.getSignedUrl({
     //   action: 'read',
     //   expires: Date.now() + 1000 * 

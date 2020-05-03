@@ -141,7 +141,7 @@ export class PaymentController extends BaseController {
     await this.showtimeService.update({
       _id: showtime._id.toString(),
     }, {
-      $push: { taken: approvedSeats }
+      $push: { taken: { $each: approvedSeats } }
     });
 
     // remove block
