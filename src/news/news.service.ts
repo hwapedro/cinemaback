@@ -28,11 +28,14 @@ export class NewsService {
     return NewsModel.deleteMany(conditions);
   }
 
-  getClientNews(take: number, skip: number) {
+  async getClientNews(limit: number, skip: number): Promise<[News[], number]> {
     const query = NewsModel.find({})
       .sort({ date: -1 })
       .skip(skip)
-      .limit(take);
+      .limit(limit);
+    const count = await NewsModel.find({}).countDocuments().exec();
+    const news = await query.lean().exec();
+    return [news, count];
   }
 
   raw() {

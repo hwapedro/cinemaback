@@ -25,8 +25,8 @@ export class ReportsController extends BaseController {
     @Body() body: ReportGenerateValidator,
     @Req() req,
   ) {
-    const from = moment.utc(body.from);
-    const to = moment.utc(body.from);
+    const from = moment.utc(body.conditions.from);
+    const to = moment.utc(body.conditions.to);
     // aggrgate all tickets grouped by cinema
     const result = await this.reportsService.raw().aggregate([
       {

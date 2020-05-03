@@ -27,10 +27,13 @@ export class ClientNewsController extends BaseController {
   async getNews(
     @Query() query: NewsQueryValidator,
   ) {
-    const { take, skip } = query;
-    const news = this.newsService.getClientNews(+take, +skip);
+    const limit = +query.limit;
+    const skip = +query.skip;
+    const [news, count] = await this.newsService.getClientNews(+limit, +skip);
     return this.wrapSuccess({
-
+      news,
+      hasMore: ((skip || 0) + (limit || 1)) < count,
+      total: count,
     });
   }
 }

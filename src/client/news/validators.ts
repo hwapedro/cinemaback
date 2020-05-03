@@ -6,5 +6,5 @@ export class NewsQueryValidator  {
   skip: string;
 
   @IsNumberString()
-  take: string;
+  limit: string;
 }
