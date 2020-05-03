@@ -1,12 +1,11 @@
-import { IsNotEmpty, IsDate, IsDateString, Allow } from "class-validator";
+import { IsNotEmpty, IsDate, IsDateString } from "class-validator";
 
 export class ReportGenerateValidator {
-  @Allow()
-  conditions: any;
+  @IsNotEmpty()
+  @IsDateString()
+  from: string;
 
-  @Allow()
-  skip: any;
-
-  @Allow()
-  limit: any;
+  @IsNotEmpty()
+  @IsDateString()
+  to: string;
 }

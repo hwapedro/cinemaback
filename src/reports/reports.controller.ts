@@ -19,14 +19,14 @@ export class ReportsController extends BaseController {
     super();
   }
 
-  @Post('/query')
+  @Post('/generate')
   @UseGuards(AuthGuard('jwt'))
   async getReport(
     @Body() body: ReportGenerateValidator,
     @Req() req,
   ) {
-    const from = moment.utc(body.conditions.from);
-    const to = moment.utc(body.conditions.to);
+    const from = moment.utc(body.from);
+    const to = moment.utc(body.from);
     // aggrgate all tickets grouped by cinema
     const result = await this.reportsService.raw().aggregate([
       {
