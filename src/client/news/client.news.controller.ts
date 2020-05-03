@@ -29,6 +29,9 @@ export class ClientNewsController extends BaseController {
   ) {
     const { take, skip } = query;
     const news = this.newsService.getClientNews(+take, +skip);
+    return this.wrapSuccess({
+
+    });
   }
 }
 

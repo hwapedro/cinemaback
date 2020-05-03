@@ -53,7 +53,6 @@ const toProperPlural = (str: string) => {
 const configToModel = (target: any, field: string, fieldConfig: any): string => {
   // first of all -- metadata
   const data = Reflect.getMetadata(ADMIN_KEY, target.prototype, field);
-  console.log(data);
   if (data && data.type)
     return `type: '${data.type}'`;
   if (field === 'image') {

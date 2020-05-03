@@ -75,7 +75,6 @@ export class PaymentService {
       const request = new PaypalCheckoutSDK.orders.OrdersCaptureRequest(orderId);
       request.requestBody({});
       request.path = request.path.slice(0, -1);
-      console.log(request);
       let response = await client.execute(request);
       // const { data } = await this.httpService.post(`${PAYPAL_URL}${request.path}`, request.body).toPromise();
       log.mark(response);

@@ -18,7 +18,6 @@ import { TicketModel } from '~/ticket/ticket.model';
  */
 @pre<Film>('remove', async function (next) {
   try {
-    console.log('remove', this);
     const filmId = oidToString(this._id);
     await CinemaModel.updateMany({}, {
       $pullAll: { films: [filmId] }

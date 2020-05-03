@@ -63,7 +63,7 @@ export class UserController extends BaseController {
 
     let user = await this.userService.create({
       ...body,
-      passwod: hashedPassword,
+      password: hashedPassword,
       salt,
     });
 
