@@ -16,6 +16,7 @@ import { oidToString } from '~/common/scripts/oidToString';
     next(error);
   }
 })
+
 export class Genre extends BaseMongooseModel {
   @prop()
   name: string;

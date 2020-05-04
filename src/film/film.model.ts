@@ -3,11 +3,13 @@ import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
 import { AgeRule } from '~/ageRule/ageRule.model';
 import { Actor } from '~/actor/actor.model';
 import { Genre } from '~/genre/genre.model';
+import { News } from '~/news/news.model';
 import { BaseMongooseModel } from '~/common/BaseModel';
 import { CinemaModel } from '~/cinema/cinema.model';
 import { oidToString } from '~/common/scripts/oidToString';
 import { ShowtimeModel } from '~/showtime/showtime.model';
 import { TicketModel } from '~/ticket/ticket.model';
+
 
 /*
 Наименование	Дата выпуска	Дата начала проката	Дата  окончания проката	Описание
@@ -59,6 +61,9 @@ export class Film extends BaseMongooseModel {
 
   @arrayProp({ ref: 'Genre' })
   genres: Ref<Genre>[];
+
+  @arrayProp({ ref: 'News' })
+  news: Ref<News>[];
 
   @prop()
   image: string;

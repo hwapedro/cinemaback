@@ -25,6 +25,7 @@ export class FilmController extends BaseController {
       .populate('actors')
       .populate('genres')
       .populate('ageRule')
+      .populate('news')
       .exec();
     return this.wrapSuccess({
       film,
@@ -41,6 +42,7 @@ export class FilmController extends BaseController {
       .populate('actors')
       .populate('genres')
       .populate('ageRule')
+      .populate('news')
       .lean();
     if (query.limit) {
       findQuery = findQuery.limit(query.limit);
@@ -68,6 +70,7 @@ export class FilmController extends BaseController {
       .populate('actors')
       .populate('genres')
       .populate('ageRule')
+      .populate('news')
       .execPopulate();
     return this.wrapSuccess({
       film
@@ -86,6 +89,7 @@ export class FilmController extends BaseController {
       .populate('actors')
       .populate('genres')
       .populate('ageRule')
+      .populate('news')
       .lean()
       .exec();
     return this.wrapSuccess({
