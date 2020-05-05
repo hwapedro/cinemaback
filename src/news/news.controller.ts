@@ -5,7 +5,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { QueryValidator } from '~/common/validators';
 
-@Controller('api/v1/news')
+@Controller('/api/v1/news')
 @ApiTags('auth')
 export class NewsController extends BaseController {
   constructor(

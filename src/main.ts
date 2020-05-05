@@ -39,12 +39,14 @@ async function bootstrap() {
   }));
 
   await app.listen(+process.env.PORT);
-  
+
   // generate frontend models
   // require('./models').generate();
 
   // generate default admin user
   await app.get(AuthService).createDefaultUser();
+    console.error('Started on port', process.env.PORT)
+
   // create test
   if (false) {
     const ss = app.get(ShowtimeService);

@@ -7,6 +7,7 @@ import { HallCellModule } from '~/hallCell/hallCell.module';
 import { GenreModule } from '~/genre/genre.module';
 import { AgeRuleModule } from '~/ageRule/ageRule.module';
 import { NewsModule } from '~/news/news.module';
+import { CommentModule } from '~/comment/comment.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { NewsModule } from '~/news/news.module';
     forwardRef(() => HallCellModule),
     forwardRef(() => GenreModule),
     forwardRef(() => AgeRuleModule),
+    forwardRef(() => CommentModule),
   ],
   controllers: [
     ClientNewsController

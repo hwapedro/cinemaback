@@ -126,8 +126,6 @@ export class SoonController extends BaseController {
       }
     ]);
 
-    log.mark(filmsByMonth);
-
 
     // transfrom array to map
     const soonTable: any = {};

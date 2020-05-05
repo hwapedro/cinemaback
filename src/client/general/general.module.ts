@@ -19,7 +19,8 @@ import { AgeRuleModule } from '~/ageRule/ageRule.module';
     forwardRef(() => ShopModule),
     forwardRef(() => GenreModule),
     forwardRef(() => AgeRuleModule),
- ],
+    forwardRef(() => FilmModule),
+  ],
   controllers: [
     ClientGeneralController
   ],

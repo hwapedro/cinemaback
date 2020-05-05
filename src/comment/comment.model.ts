@@ -9,7 +9,7 @@ export class Comment {
   @prop()
   text: string;
 
-  @prop()
+  @prop({ default: () => Date.now() })
   time: Date;
 }
 

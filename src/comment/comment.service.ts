@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ModelUpdateOptions } from 'mongoose';
 import { CommentModel, Comment } from './comment.model';
+import { DocumentType } from '@typegoose/typegoose';
 
 @Injectable()
 export class CommentService {
@@ -30,5 +31,13 @@ export class CommentService {
 
   raw() {
     return CommentModel;
+  }
+
+  wrap(comment: DocumentType<Comment>) {
+    return {
+      _id: comment._id.toString(),
+      text: comment.text,
+      date: comment.time.getTime(),
+    };
   }
 }

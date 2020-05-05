@@ -1,5 +1,5 @@
 import { WithCinema } from '~/client/common/validators';
-import { IsString, IsNotEmpty, Matches, IsMongoId, IsNumberString } from 'class-validator';
+import { IsString, IsNotEmpty, Matches, IsMongoId, IsNumberString, MaxLength } from 'class-validator';
 
 export class NewsQueryValidator  {
   @IsNumberString()
@@ -7,4 +7,11 @@ export class NewsQueryValidator  {
 
   @IsNumberString()
   limit: string;
+}
+
+export class PostCommentValidator {
+  @IsString()
+  @MaxLength(1000)
+  @IsNotEmpty()
+  text: string;
 }

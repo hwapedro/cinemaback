@@ -11,6 +11,7 @@ import { GenreService } from '~/genre/genre.service';
 import { AgeRuleService } from '~/ageRule/ageRule.service';
 import { oidToString } from '~/common/scripts/oidToString';
 import { Genre } from '~/genre/genre.model';
+import { FilmService } from '~/film/film.service';
 
 @Controller('/client/api/v1/general')
 export class ClientGeneralController extends BaseController {
@@ -21,7 +22,8 @@ export class ClientGeneralController extends BaseController {
     @Inject(forwardRef(() => CinemaService)) private shopService: CinemaService,
     @Inject(forwardRef(() => GenreService)) private genreService: GenreService,
     @Inject(forwardRef(() => AgeRuleService)) private ageRuleService: AgeRuleService,
-  ) {
+    @Inject(forwardRef(() => FilmService)) private filmService: FilmService,
+    ) {
     super();
   }
 
@@ -50,6 +52,23 @@ export class ClientGeneralController extends BaseController {
       shops,
       genres,
       ageRules,
+    });
+  }
+
+  @Get('/film/:id')
+  async getById(
+    @Param('id') id: string,
+    @Req() req,
+  ) {
+    const film = await this.filmService.findById(id)
+      .lean()
+      .populate('actors')
+      .populate('genres')
+      .populate('ageRule')
+      .populate('news')
+      .exec();
+    return this.wrapSuccess({
+      film,
     });
   }
 }
