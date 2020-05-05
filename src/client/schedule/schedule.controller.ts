@@ -59,6 +59,24 @@ export class ScheduleController extends BaseController {
     });
   }
 
+  @Get('/film/:id')
+  async getById(
+    @Param('id') id: string,
+    @Req() req,
+  ) {
+    const film = await this.filmService.findById(id)
+      .lean()
+      .populate('actors')
+      .populate('genres')
+      .populate('ageRule')
+      .populate('news')
+      .exec();
+    return this.wrapSuccess({
+      film,
+    });
+  }
+
+
   @Get('/showtime/:id')
   async getShowtimeById(
     @Param() params: GetShowtimeValidator,
