@@ -15,9 +15,6 @@ export class News extends BaseMongooseModel {
 
   @prop()
   date: Date;
-
-  @arrayProp({ ref: 'Comment' })
-  comments: Ref<Comment>[];
 }
 
 export const NewsModel = getModelForClass(News, {

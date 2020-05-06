@@ -9,11 +9,12 @@ import { mongoose } from '@typegoose/typegoose';
 import { GenreService } from '~/genre/genre.service';
 import { AgeRuleService } from '~/ageRule/ageRule.service';
 import { Genre } from '~/genre/genre.model';
-import { NewsQueryValidator, PostCommentValidator } from './validators';
+import { NewsQueryValidator, PostCommentValidator, CommentsQueryValidator } from './validators';
 import { AgeRule } from '~/ageRule/ageRule.model';
 import { Actor } from '~/actor/actor.model';
 import { NewsService } from '~/news/news.service';
 import { CommentService } from '~/comment/comment.service';
+import { oidToString } from '~/common/scripts/oidToString';
 
 @Controller('client/api/v1/news')
 @ApiTags('client/news')
@@ -28,15 +29,32 @@ export class ClientNewsController extends BaseController {
   @Get(':newsId')
   async getNewsPiece(
     @Param('newsId') newsId: string,
+    @Query('take', ParseIntPipe) take: number,
   ) {
     const newsItem = await this.newsService.findById(newsId).lean().exec();
-    // get first news
-    const comments = await this.commentService.find({
-      _id: { $in: newsItem.comments.slice(-10) }
-    }).lean().exec();
+    // get first comments
+    const [comments, total] = await this.commentService.getComments(oidToString(newsItem._id), take, 0);
     return this.wrapSuccess({
       newsItem: this.newsService.wrap(newsItem),
       comments: comments.map(this.commentService.wrap),
+      total,
+      hasMore: take < total,
+    });
+  }
+
+  @Get(':newsId/comments')
+  async getComments(
+    @Param('newsId') newsId: string,
+    @Query() query: CommentsQueryValidator,
+  ) {
+    // get first comments
+    const skip = +query.skip;
+    const limit = +query.limit;
+    const [comments, total] = await this.commentService.getComments(newsId, +limit, +skip);
+    return this.wrapSuccess({
+      comments: comments.map(this.commentService.wrap),
+      total,
+      hasMore: ((skip || 0) + (limit || 1)) < total,
     });
   }
 
@@ -49,9 +67,10 @@ export class ClientNewsController extends BaseController {
     if (!newsItem) {
       return this.wrapError('No news piece!');
     }
-    const comment = await this.newsService.createComment(body);
-    newsItem.comments.push(comment._id);
-    await newsItem.save();
+    const comment = await this.newsService.createComment({
+      ...body,
+      news: oidToString(newsItem._id),
+    });
     return this.wrapSuccess({
       comment: this.commentService.wrap(comment),
     });

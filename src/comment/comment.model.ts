@@ -1,5 +1,6 @@
-import { prop, getModelForClass } from '@typegoose/typegoose';
+import { prop, getModelForClass, Ref } from '@typegoose/typegoose';
 import { defaultSchemaOptions, defaultOptions } from '~/common/constants';
+import { News } from '~/news/news.model';
 
 /*
 Текст	Дата и время
@@ -11,6 +12,9 @@ export class Comment {
 
   @prop({ default: () => Date.now() })
   time: Date;
+
+  @prop({ ref: 'News' })
+  news: Ref<News>;
 }
 
 export const CommentModel = getModelForClass(Comment, {

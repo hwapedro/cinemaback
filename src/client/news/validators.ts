@@ -8,6 +8,7 @@ export class NewsQueryValidator  {
   @IsNumberString()
   limit: string;
 }
+export class CommentsQueryValidator extends NewsQueryValidator {}
 
 export class PostCommentValidator {
   @IsString()

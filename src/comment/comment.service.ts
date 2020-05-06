@@ -33,11 +33,25 @@ export class CommentService {
     return CommentModel;
   }
 
+  async getComments(newsId: string, limit: number, skip: number): Promise<[Comment[], number]> {
+    const mainQuery = {
+      news: newsId
+    };
+    const query = CommentModel.find(mainQuery)
+      .sort({ time: -1 })
+      .skip(skip)
+      .limit(limit);
+    const count = await CommentModel.find(mainQuery).countDocuments().exec();
+    const news = await query.lean().exec();
+    return [news, count];
+  }
+
   wrap(comment: DocumentType<Comment>) {
     return {
       _id: comment._id.toString(),
       text: comment.text,
       date: comment.time.getTime(),
+      news: comment.news,
     };
   }
 }
