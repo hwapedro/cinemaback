@@ -28,7 +28,20 @@ export class ShopItemService {
     return ShopItemModel.deleteMany(conditions);
   }
 
+  async getClientItems(q: any, limit: number, skip: number): Promise<[ShopItem[], number]> {
+    const query = ShopItemModel.find(q)
+      .skip(skip)
+      .limit(limit);
+    const count = await ShopItemModel.find(q).countDocuments().exec();
+    const items = await query.lean().exec();
+    return [items, count];
+  }
+
   raw() {
     return ShopItemModel;
+  }
+
+  wrapClient(shopItem: ShopItem) {
+    return shopItem;
   }
 }

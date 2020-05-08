@@ -37,6 +37,12 @@ export class ShopService {
     return ShopModel;
   }
 
+  wrapClient(shop: Shop) {
+    return {
+      ...shop,
+    };
+  }
+
   async validateOrder(orderedItems: OrderedItemValidator[]): Promise<[boolean, BoughtItem[]] | [boolean, string, OrderedItemValidator[]]> {
     const items = await this.shopItemService.find({
       _id: { $in: orderedItems.map(item => item.item) },
