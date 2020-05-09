@@ -16,6 +16,8 @@ import { ShopService } from '~/shop/shop.service';
 import { BoughtItem } from '~/ticket/ticket.model';
 import { Film } from '~/film/film.model';
 import { Hall } from '~/hall/hall.model';
+import { CinemaModel } from '~/cinema/cinema.model';
+import { ShopItemModel } from '~/shopItem/shopItem.model';
 
 @Controller('client/api/v1/payment')
 @ApiTags('client/payment')
@@ -36,13 +38,21 @@ export class PaymentController extends BaseController {
   async startPayment(
     @Body() body: StartPaymentValidator,
   ) {
-    const { seats, showtimeId } = body;
+    const { seats, items, showtimeId } = body;
     // ensure showtime exists
     const showtime = await this.showtimeService.findById(showtimeId).exec();
     if (!showtime) {
       return this.wrapError('No such showtime');
     }
 
+    // ensure items are in stock
+    const badItems = await this.paymentService.ensureItems(items);
+    if (badItems.length) {
+      return this.wrapFail({
+        status: 'out-of-stock',
+        items: badItems
+      });
+    }
     // ensure all seats are free
     let seatsNotFree = await this.paymentService.seatsAreFree(showtime, seats);
     if (seatsNotFree.length) {
@@ -72,7 +82,13 @@ export class PaymentController extends BaseController {
       phone,
       blockId,
       showtimeId,
+      cinemaId,
     } = body;
+    const cinema = await CinemaModel.findById(cinemaId).lean().exec();
+    if (!cinema) {
+      return this.wrapError('No such cinema');
+    }
+    
     // validate that purchase is valid
     const showtime = await this.showtimeService.findById(showtimeId)
       .populate('hall')
@@ -120,12 +136,16 @@ export class PaymentController extends BaseController {
         cell,
       };
     });
-    log.mark(approvedSeats, hallCells, hall);
-    const priceSeats = approvedSeats.reduce((acc, curr) => acc + hallCells[hall.structure[curr.row][curr.cell]].price, 0);
+    const hallCellsMap = Object.fromEntries(hallCells.map(hc => [
+      hc.index,
+      hc
+    ]));
+    log.mark(approvedSeats, hallCellsMap, hall);
+    const priceSeats = approvedSeats.reduce((acc, curr) => acc + hallCellsMap[hall.structure[curr.row][curr.cell]].price, 0);
     const priceShopItems = (statusOrBoguth as BoughtItem[]).reduce((acc, curr) => acc + curr.price, 0);
     const totalPrice = priceSeats + priceShopItems;
 
-    await this.ticketService.create({
+    const ticket = await this.ticketService.create({
       firstName,
       lastName,
       phone,
@@ -133,7 +153,7 @@ export class PaymentController extends BaseController {
       orderedItems: statusOrBoguth as BoughtItem[],
       seats: approvedSeats,
       price: totalPrice,
-      // cinema: 'todo' as any,
+      cinema: cinemaId as any,
       film: filmId as any,
       hall: hallId as any,
       time,
@@ -147,6 +167,30 @@ export class PaymentController extends BaseController {
 
     // remove block
     await this.paymentService.removeBlock(blockId);
+    const dbItems = await ShopItemModel.find({
+      _id: { $in: orderedItems.map(item => item.item) },
+    });
+
+    return this.wrapSuccess({
+      ticket: {
+        _id: ticket._id.toString(),
+        firstName,
+        lastName,
+        phone,
+        transactionId,
+        orderedItems: statusOrBoguth,
+        dbItems,
+        seats: approvedSeats,
+        price: totalPrice,
+        cinema: {
+          name: cinema.name,
+          address: cinema.address
+        },
+        film,
+        hall,
+        time: time.getTime(),
+      }
+    });
   }
 }
 

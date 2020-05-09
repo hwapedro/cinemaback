@@ -63,7 +63,8 @@ export class ClientShopController extends BaseController {
     const limit = +query.limit;
     const skip = +query.skip;
     const [items, total] = await this.shopItemService.getClientItems({
-      _id: { $in: shop.shopItems }
+      _id: { $in: shop.shopItems },
+      inStock: true,
     }, +limit, +skip);
     console.log(items);
 

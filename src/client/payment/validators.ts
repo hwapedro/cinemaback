@@ -1,4 +1,5 @@
-import { IsString, IsNotEmpty, Matches, IsMongoId, IsInt, IsArray, ArrayNotEmpty, ArrayMaxSize, ArrayMinSize, Min } from 'class-validator';
+import { IsString, IsNotEmpty, Matches, IsMongoId, IsInt, IsArray, ArrayNotEmpty, ArrayMaxSize, ArrayMinSize, Min, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class PaymentSeat {
   @IsInt()
@@ -22,13 +23,20 @@ export class StartPaymentValidator {
   @ArrayNotEmpty()
   @ArrayMinSize(1)
   seats: PaymentSeat[];
+
+  @IsArray()
+  @ValidateNested()
+  @Type(() => OrderedItemValidator)
+  items: OrderedItemValidator[];
 }
 
 export class OrderedItemValidator {
   @IsMongoId()
+  @IsNotEmpty()
   item: string;
 
   @IsInt()
+  @IsNotEmpty()
   quantity: number;
 }
 
@@ -49,6 +57,11 @@ export class SubmitPaymentValidator {
 
   @IsArray()
   orderedItems: OrderedItemValidator[];
+
+  @IsMongoId()
+  @IsNotEmpty()
+  @IsString()
+  cinemaId: string;
 
   @IsString()
   @IsNotEmpty()

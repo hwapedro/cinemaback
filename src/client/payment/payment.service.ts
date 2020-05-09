@@ -1,12 +1,13 @@
 import { Injectable, HttpService } from '@nestjs/common';
 import { Showtime } from '~/showtime/showtime.model';
-import { PaymentSeat } from './validators';
+import { PaymentSeat, OrderedItemValidator } from './validators';
 import { DocumentType } from '@typegoose/typegoose';
 import { SEAT_BLOCK_DURATION_SEC } from '../seatBlock/constants';
 import { SeatBlock, SeatBlockModel } from '../seatBlock/seatBlock.model';
 import log from 'color-log';
 import uniqid from 'uniqid';
 import PaypalCheckoutSDK from '@paypal/checkout-server-sdk';
+import { ShopItemModel } from '~/shopItem/shopItem.model';
 
 const PAYPAL_URL = process.env.LOCAL ? 'https://api.sandbox.paypal.com' : 'https://api.sandbox.paypal.com';
 let clientId = process.env.PAYPAL_CLIENT_ID;
@@ -46,6 +47,14 @@ export class PaymentService {
       return takenInShowtime;
     }
     return [];
+  }
+
+  async ensureItems(items: OrderedItemValidator[]) {
+    const badShopItems = await ShopItemModel.find({
+      _id: { $in: items.map(i => i.item) },
+      inStock: false,
+    }).lean().exec();
+    return badShopItems;
   }
 
   async blockSeats(showtime: DocumentType<Showtime>, seats: PaymentSeat[]): Promise<[number, string]> {
