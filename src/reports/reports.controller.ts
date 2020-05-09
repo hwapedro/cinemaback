@@ -8,6 +8,7 @@ import { OId } from '~/types';
 import moment from 'moment';
 import { oidToString } from '~/common/scripts/oidToString';
 import { CinemaService } from '~/cinema/cinema.service';
+import { TicketModel } from '~/ticket/ticket.model';
 
 @Controller('api/v1/reports')
 @ApiTags('reports')
@@ -26,9 +27,9 @@ export class ReportsController extends BaseController {
     @Req() req,
   ) {
     const from = moment.utc(body.from);
-    const to = moment.utc(body.from);
+    const to = moment.utc(body.to);
     // aggrgate all tickets grouped by cinema
-    const result = await this.reportsService.raw().aggregate([
+    const result = await TicketModel.aggregate([
       {
         $match: {
           time: {
@@ -39,11 +40,12 @@ export class ReportsController extends BaseController {
       },
       {
         $group: {
-          _id: 'cinema',
-          income: { $sum: 'price' },
+          _id: '$cinema',
+          income: { $sum: '$price' },
         }
       },
     ]);
+    console.log(result);
     // fetch cinemas
     const cinemas = await this.cinemaService.find({
       _id: { $in: result.map(r => r._id) }
