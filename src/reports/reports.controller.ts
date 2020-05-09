@@ -48,11 +48,11 @@ export class ReportsController extends BaseController {
     console.log(result);
     // fetch cinemas
     const cinemas = await this.cinemaService.find({
-      _id: { $in: result.map(r => r._id) }
+      _id: { $in: result.map(r => oidToString(r._id)) }
     }, { _id: 1, name: 1 }).lean().exec();
     const incomeByCinema = result.map(income => ({
       income: income.income,
-      cinema: cinemas.find(c => oidToString(income._id) === income.cinema),
+      cinema: cinemas.find(c => oidToString(c._id) === oidToString(income.cinema)),
     }))
     return {
       ...body,
