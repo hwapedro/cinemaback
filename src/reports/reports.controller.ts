@@ -50,10 +50,13 @@ export class ReportsController extends BaseController {
     const cinemas = await this.cinemaService.find({
       _id: { $in: result.map(r => oidToString(r._id)) }
     }, { _id: 1, name: 1 }).lean().exec();
-    const incomeByCinema = result.map(income => ({
-      income: income.income,
-      cinema: cinemas.find(c => oidToString(c._id) === oidToString(income._id)),
-    }))
+    const incomeByCinema = result.map(income => {
+      const cinema = cinemas.find(c => oidToString(c._id) === oidToString(income._id));
+      return {
+        income: income.income,
+        cinema: cinema ? cinema.name : 'Unknown cinema',
+      };
+    });
     return {
       ...body,
       income: incomeByCinema,
