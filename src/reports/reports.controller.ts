@@ -52,7 +52,7 @@ export class ReportsController extends BaseController {
     }, { _id: 1, name: 1 }).lean().exec();
     const incomeByCinema = result.map(income => ({
       income: income.income,
-      cinema: cinemas.find(c => oidToString(c._id) === oidToString(income.cinema)),
+      cinema: cinemas.find(c => oidToString(c._id) === oidToString(income._id)),
     }))
     return {
       ...body,
